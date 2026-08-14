@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI OS — Control, Operational State, Memory &amp; Audit Layer — ТЗ v1.1</title>
+  <style>
+    :root {
+      --ink:#152033; --muted:#5f6f83; --bg:#f3f6fa; --paper:#fff; --line:#d9e2ec;
+      --navy:#112d4e; --blue:#205ecf; --blue-soft:#eaf1ff; --teal:#087a68; --teal-soft:#e8f8f4;
+      --amber:#a55300; --amber-soft:#fff2dc; --red:#aa3737; --red-soft:#fff0ef;
+      --violet:#6846c7; --violet-soft:#f1edff; --shadow:0 10px 26px rgba(22,42,70,.08); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.56 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1260px;margin:0 auto;padding:32px 18px 72px}
+    .hero{padding:34px;border-radius:24px;color:#fff;background:radial-gradient(circle at 84% 0%,rgba(50,199,175,.42),transparent 37%),linear-gradient(135deg,#102541,#20548e 62%,#147667 130%);box-shadow:var(--shadow)}
+    .eyebrow{margin:0 0 9px;color:#bcd9ff;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    h1{max-width:1040px;margin:0;font-size:clamp(30px,4.4vw,50px);line-height:1.08;letter-spacing:-.025em}
+    .lead{max-width:960px;margin:17px 0 0;color:#e5f0ff;font-size:18px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+    .pill{padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px;font-weight:650;letter-spacing:.01em}
+    .summary-grid,.grid{display:grid;gap:14px}
+    .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0}
+    .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card,.summary-grid>article{padding:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow)}
+    .summary-grid strong{display:block;margin-bottom:7px;font-size:14px}
+    .summary-grid p,.card p{margin:7px 0;color:var(--muted)}
+    .decision{margin:20px 0;padding:22px 24px;border-left:5px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;background:var(--teal-soft)}
+    .decision h2{margin:0 0 8px;font-size:23px;letter-spacing:-.015em}
+    .decision p{margin:0;font-size:16px}
+    nav{margin:18px 0;padding:18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow)}
+    nav strong{display:block;margin-bottom:8px}
+    nav ol{columns:2;column-gap:34px;margin:0;padding-left:20px}
+    nav li{margin:4px 0;break-inside:avoid}
+    details{overflow:clip;margin:14px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:var(--shadow)}
+    summary{cursor:pointer;padding:18px 21px;list-style:none;font-size:18px;font-weight:700}
+    summary::-webkit-details-marker{display:none}
+    summary::after{content:"+";float:right;color:var(--blue);font-size:23px;line-height:.8}
+    details[open] summary{border-bottom:1px solid var(--line)}
+    details[open] summary::after{content:"−"}
+    .body{padding:21px}
+    .body>:first-child{margin-top:0}
+    h2{margin:0 0 10px;font-size:24px;letter-spacing:-.015em}
+    h3{margin:25px 0 9px;font-size:19px;letter-spacing:-.01em}
+    h4{margin:0 0 7px;font-size:16px}
+    p{margin:9px 0}
+    ul,ol{margin:9px 0;padding-left:22px}
+    li{margin:5px 0}
+    .table-wrap{overflow-x:auto;margin:10px 0}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.065em;text-transform:uppercase}
+    tr:last-child td{border-bottom:0}
+    code{padding:2px 5px;border-radius:5px;background:#edf2f7;font:.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    pre{overflow:auto;margin:11px 0;padding:15px;border-radius:12px;background:#11213a;color:#e7f0ff;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap}
+    .tag{display:inline-block;margin-bottom:8px;padding:3px 8px;border-radius:99px;background:var(--blue-soft);color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.02em}
+    .tag.ok{background:var(--teal-soft);color:var(--teal)}
+    .tag.warn{background:var(--amber-soft);color:var(--amber)}
+    .tag.danger{background:var(--red-soft);color:var(--red)}
+    .tag.violet{background:var(--violet-soft);color:var(--violet)}
+    .callout,.warning,.danger{padding:14px 16px;border-radius:12px}
+    .callout{background:var(--blue-soft);color:#183c74}
+    .warning{background:var(--amber-soft);color:#744000}
+    .danger{background:var(--red-soft);color:#792e2e}
+    .flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:14px 0}
+    .step{padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#f9fbfd;font-size:12px;font-weight:650}
+    .arrow{color:var(--blue);font-size:19px;font-weight:700}
+    .fit{border:2px solid var(--teal);background:linear-gradient(145deg,#fff,#f1fffb)}
+    .sources{color:var(--muted);font-size:13px}
+    .foot{margin:22px 2px 0;color:var(--muted);font-size:12px}
+    a{color:var(--blue)}
+    @media(max-width:980px){.summary-grid,.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:720px){main{padding:18px 10px 48px}.hero{padding:25px 20px}.summary-grid,.two,.three{grid-template-columns:1fr}nav ol{columns:1}.body{padding:17px}th,td{min-width:130px}}
+    @media print{body{background:#fff}main{max-width:none}.hero,details,.card,nav{box-shadow:none}details{break-inside:avoid}details:not([open])>.body{display:block}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <p class="eyebrow">AI Operating System · техническое задание v1.1</p>
+    <h1>Control, Operational State, Memory &amp; Audit Layer</h1>
+    <p class="lead">Единая спецификация слоя, который превращает разговоры в управляемую работу, поддерживает текущее состояние проектов в Notion, сохраняет первоисточники и доказательный след в Obsidian, проводит ежедневные briefing и не допускает активацию новых «мозгов» агентов без явного утверждения Андрея.</p>
+    <div class="meta">
+      <span class="pill">Document ID: AIOS-COMA-TZ-001</span>
+      <span class="pill">Версия: 1.1 DRAFT</span>
+      <span class="pill">Дата: 14 августа 2026</span>
+      <span class="pill">Владелец решений: Андрей</span>
+      <span class="pill">Статус ACP: ожидают утверждения</span>
+      <span class="pill">Architecture review: 7/7 закрыто</span>
+    </div>
+  </header>
+
+  <section class="summary-grid" aria-label="Краткий итог">
+    <article><strong>Baseline сохранён</strong><p>Документ расширяет существующую архитектуру и не меняет роли Hermes, Codex, RAG и Work молча.</p></article>
+    <article><strong>Notion = текущая работа</strong><p>Проекты, задачи, решения, вопросы, агенты, версии, инструкции и видимый журнал изменений.</p></article>
+    <article><strong>Obsidian = источник и аудит</strong><p>Сырые разговоры, транскрипты, operational packages, briefing и append-only события с hash.</p></article>
+    <article><strong>Approval обязателен</strong><p>Hermes может предложить новую версию мозга, но активировать можно только точный hash, утверждённый Андреем.</p></article>
+  </section>
+
+  <section class="decision">
+    <h2>Основное решение</h2>
+    <p>Слой строится вокруг одного правила: <b>разговор не меняет систему напрямую</b>. БОТ-расшифровщик создаёт доказательный операционный пакет; Hermes проверяет проект, источники, дубликаты и полномочия; все смысловые изменения проходят через контролируемый State Adapter, фиксируются как ChangeEvent и связываются с сырым источником в Obsidian.</p>
+  </section>
+
+  <nav aria-label="Содержание">
+    <strong>Содержание</strong>
+    <ol>
+      <li><a href="#patch-v11">Patch v1.1</a></li>
+      <li><a href="#baseline">Baseline и противоречия</a></li>
+      <li><a href="#acp">Architecture Change Proposals</a></li>
+      <li><a href="#scope">Цели, границы и метрики</a></li>
+      <li><a href="#topology">Целевая топология</a></li>
+      <li><a href="#roles">Ответственность и права</a></li>
+      <li><a href="#truth">Источники истины</a></li>
+      <li><a href="#contracts">ID и контракты</a></li>
+      <li><a href="#transcriber">БОТ-расшифровщик</a></li>
+      <li><a href="#notion">Схема данных Notion</a></li>
+      <li><a href="#obsidian">Структура Obsidian Vault</a></li>
+      <li><a href="#audit">Audit trail</a></li>
+      <li><a href="#approval">Approval и versioning</a></li>
+      <li><a href="#briefing">Ежедневный briefing</a></li>
+      <li><a href="#integration">Интеграции</a></li>
+      <li><a href="#reliability">Надёжность и безопасность</a></li>
+      <li><a href="#implementation">Реализация и acceptance</a></li>
+      <li><a href="#open">Параметры перед deploy</a></li>
+    </ol>
+  </nav>
+
+  <details id="patch-v11" open>
+    <summary>Patch v1.1 — закрытие архитектурного review</summary>
+    <div class="body">
+      <p>Версия 1.1 является локализованным patch поверх v1.0. Исходная архитектура, состав 11 Notion entities и три ACP не перепроектированы. До явного утверждения Андреем <code>ACP-001/002/003</code> документ остаётся <code>DRAFT</code>, а переключение authority не выполняется.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Замечание</th><th>Нормативное решение v1.1</th><th>Где закреплено</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>READ → WRITE race</td><td>Single-writer для каждого entity через durable lease и fencing token; <code>expected_state_version</code> остаётся второй защитой.</td><td>§11, §15, acceptance</td></tr>
+          <tr><td>2</td><td>Ручное изменение Approval Status</td><td>Notion показывает action, но решение всегда становится <code>ApprovalCommand</code>; поле Status меняет только State Adapter.</td><td>§9.10, §12, §17</td></tr>
+          <tr><td>3</td><td>MCP write можно обойти</td><td>Физически разные профили <code>notion_read</code> и <code>notion_state_adapter</code>; у агентов нет write-capability.</td><td>§5, §14, §15</td></tr>
+          <tr><td>4</td><td>Не определён durable outbox</td><td>SQLite WAL на Hermes Base — authority для commands/outbox/inbox/idempotency/leases/checkpoints; обязателен backup и restart recovery.</td><td>§4, §6, §11, §15</td></tr>
+          <tr><td>5</td><td>Не определена canonicalization</td><td>Введён <code>AIOS-HASH-V1</code> для raw bytes, text artifacts, canonical JSON и semantic Notion state.</td><td>§7</td></tr>
+          <tr><td>6</td><td>Завышенная гарантия UI audit</td><td>Exact old/new гарантируется для State Adapter writes; UI edits — best-effort reconstruction с обязательным <code>UNRECONCILED</code> при недоказуемой истории.</td><td>§3, §11, acceptance</td></tr>
+          <tr><td>7</td><td>Нет алгоритма replay</td><td>Определён deterministic Replay Contract: schema → checkpoint → ordered ChangeEvents → integrity → repo reconciliation → projections.</td><td>§15, acceptance</td></tr>
+        </tbody>
+      </table></div>
+      <p class="callout"><b>Gate после patch:</b> технические замечания review закрыты. Следующее действие владельца — отдельно APPROVE/REJECT три ACP; сам факт выпуска v1.1 не считается таким approval.</p>
+    </div>
+  </details>
+
+  <details id="baseline" open>
+    <summary>1. Анализ baseline и потенциальные противоречия</summary>
+    <div class="body">
+      <p>Baseline: <code>AI_OS_Interaction_Architecture_v1.html</code>, SHA-256 <code>7d96068cd894709bbd2c549791c5a20aa2f0dec6fc47331de1de48056d86adda</code>. Ниже отделены совместимые расширения от решений, которые действительно меняют распределение ответственности.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Новая концепция</th><th>Что говорит baseline</th><th>Конфликт / риск</th><th>Решение ТЗ</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>Notion хранит Projects, Tasks, Decisions и текущее состояние.</td><td>GitHub/control-repo назван каноническим для Task, Run, Result и Agent Manifest.</td><td><b>Критический:</b> два владельца одной Task приведут к расхождению статусов.</td><td>Разделить authority: Notion — mutable operational state; control-repo — исполнимые envelope, код, Run/Result, manifest и доказательства. До утверждения ACP-001 Notion работает read/write-projection, а control-repo сохраняет baseline-authority.</td><td><span class="tag danger">ACP-001</span></td></tr>
+          <tr><td>Agent Brain/Prompt Versions представлены в Notion.</td><td>Agent Manifest и исполнимые конфиги версионируются в control-repo.</td><td>Если активный prompt хранить только в Notion, исчезают reproducibility и точный rollback.</td><td>Notion хранит каталог, diff, status и approval. Активный неизменяемый artifact остаётся в control-repo и идентифицируется version + SHA-256.</td><td><span class="tag ok">Совместимо</span></td></tr>
+          <tr><td>Obsidian объявлен immutable/raw memory и audit trail.</td><td>Baseline описывает Obsidian/Markdown как исходные решения и документы.</td><td>Obsidian-файл технически редактируем; слово «immutable» без механизма будет ложным.</td><td>Append-only policy, уникальные event-файлы, SHA-256, Git history и запрет update/delete агентам. Это tamper-evident v1, не аппаратный WORM.</td><td><span class="tag danger">ACP-002</span></td></tr>
+          <tr><td>Транскрипт создаёт задачи, решения и инструкции агентам.</td><td>Telegram/чат не является источником истины; исполнитель получает малый ContextManifest.</td><td>Автоматическая интерпретация речи может превратить предположение в решение.</td><td>Расшифровщик создаёт только OperationalPackage с source anchors и маркировкой explicit/inferred. Hermes создаёт DRAFT/PROPOSED, а не автоматически утверждённые решения.</td><td><span class="tag ok">Совместимо</span></td></tr>
+          <tr><td>Hermes принимает результаты расшифровщика.</td><td>Hermes — control plane, но не долговременная база проекта.</td><td>Риск сложить текущую память внутрь процесса Hermes или RAM.</td><td>Hermes валидирует и маршрутизирует; durable commands/outbox/inbox/idempotency/leases/checkpoints живут в SQLite WAL на Hermes Base, а постоянное project state — в соответствующих authority.</td><td><span class="tag ok">Совместимо</span></td></tr>
+          <tr><td>Каждая смысловая правка Notion должна иметь old/new.</td><td>Такого механизма в baseline нет.</td><td>Notion webhook сообщает событие и изменённые properties, но не полное старое значение; события могут агрегироваться и приходить не по порядку.</td><td>Один State Adapter для agent writes + shadow snapshots и Audit Reconciler для правок из UI.</td><td><span class="tag warn">Новый механизм</span></td></tr>
+          <tr><td>Ежедневный briefing по активным проектам.</td><td>Hermes уже отвечает за расписание, polling и Telegram; role-pack изменяем.</td><td>Нет конфликта, если briefing не создаёт молчаливых решений.</td><td>Briefing — плановый Hermes-run; после разговора тот же transcriber pipeline и approval rules.</td><td><span class="tag ok">Совместимо</span></td></tr>
+          <tr><td>Notion MCP доступен Work/Codex.</td><td>n8n/MCP не должны становиться вторым оркестратором или источником статуса.</td><td>Прямые agent writes через MCP могут обойти audit и approval.</td><td>MCP разрешён для чтения; смысловые write-команды идут только через State Adapter. Исключение — явная правка Андрея, которую ловит webhook/reconciler.</td><td><span class="tag ok">Совместимо с ограничением</span></td></tr>
+          <tr><td>RAG использует результаты разговоров.</td><td>RAG хранит курируемые знания, а не live WIP и непроверенные выводы.</td><td>Сырые транскрипты засорят знания гипотезами.</td><td>В RAG попадают только approved decisions/manuals/verified lessons; raw transcript остаётся в Obsidian.</td><td><span class="tag ok">Совместимо</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="warning"><b>Вывод:</b> запускать реализацию можно поэтапно, но переключение authority на Notion, расширение роли Obsidian и новые системные contracts нельзя считать утверждёнными только потому, что они описаны в этом ТЗ.</p>
+    </div>
+  </details>
+
+  <details id="acp" open>
+    <summary>2. Architecture Change Proposals — требуют отдельного утверждения</summary>
+    <div class="body">
+      <div class="grid three">
+        <article class="card fit">
+          <span class="tag danger">ACP-001 · Pending</span>
+          <h4>Partitioned State Authority</h4>
+          <p><b>Изменение:</b> Notion становится authority для mutable Projects/Tasks/Decisions/Open Questions/операционных статусов; control-repo остаётся authority для TaskEnvelope, Run/Result, Agent Manifest, активных prompt-artifacts, кода и evidence.</p>
+          <p><b>Причина:</b> оперативная работа должна быть видима и редактируема Андреем без ручного чтения Git-файлов.</p>
+          <p><b>Последствия:</b> нужен State Adapter, correlation IDs, сериализованный per-entity single-writer с lease/fencing token, durable transactional store, write policy, reconciliation и миграционная точка cutover.</p>
+          <p><b>До approval:</b> Notion — проекция; baseline-authority control-repo не меняется.</p>
+        </article>
+        <article class="card">
+          <span class="tag danger">ACP-002 · Pending</span>
+          <h4>Obsidian Raw &amp; Audit Authority</h4>
+          <p><b>Изменение:</b> Obsidian Vault получает формальную роль канонического raw memory и append-only audit trail.</p>
+          <p><b>Причина:</b> каждое решение и изменение должно восстанавливаться до первоисточника.</p>
+          <p><b>Последствия:</b> Git-backed vault, hashes, retention, backup, запрет update/delete для service accounts.</p>
+          <p><b>Ограничение:</b> v1 tamper-evident; настоящий WORM потребует отдельного защищённого storage и нового ACP.</p>
+        </article>
+        <article class="card">
+          <span class="tag danger">ACP-003 · Pending</span>
+          <h4>Contract Family Extension</h4>
+          <p><b>Изменение:</b> к существующим TaskEnvelope, ContextManifest, RunEvent и ResultEnvelope добавляются SourceEvent, OperationalPackage, ChangeEvent, ApprovalEvent и BriefingPacket.</p>
+          <p><b>Причина:</b> raw source, semantic mutation и approval невозможно надёжно выразить только task/run-контрактами.</p>
+          <p><b>Последствия:</b> новые schema versions, validation и adapters; существующие четыре контракта не меняют смысл.</p>
+        </article>
+      </div>
+      <p class="callout"><b>Рекомендуемое решение эксперта:</b> утвердить все три ACP вместе. Они образуют один непротиворечивый слой. Частичное утверждение ACP-001 без ACP-002 оставит оперативное состояние без доказательного следа; ACP-002 без ACP-003 не даст строгой связи события с изменением.</p>
+    </div>
+  </details>
+
+  <details id="scope" open>
+    <summary>3. Цели, границы и критерии успеха</summary>
+    <div class="body">
+      <div class="grid two">
+        <article class="card fit"><h4>В scope v1</h4><ul>
+          <li>приём raw разговоров, созвонов, голосовых заметок, переписок и транскриптов;</li>
+          <li>формирование структурированного OperationalPackage;</li>
+          <li>Hermes ingest, project resolution, deduplication и создание draft operational entities;</li>
+          <li>11 связанных Notion data sources;</li>
+          <li>append-only Obsidian Vault с source/audit/snapshots;</li>
+          <li>семантический audit old/new с initiator/reason/source/time;</li>
+          <li>approval и активация версий мозгов/промптов;</li>
+          <li>ежедневный 10–15-минутный briefing по активным проектам;</li>
+          <li>интеграция с Hermes, Codex, Work, RAG, Telegram, n8n и GitHub/control-repo.</li>
+        </ul></article>
+        <article class="card"><h4>Не входит в v1</h4><ul>
+          <li>перепроектирование product delivery pipeline и ролей code owner/QA/release;</li>
+          <li>хранение кода, secrets, аудио-байтов или всей RAG-базы внутри Notion;</li>
+          <li>автоматическое утверждение решений, architecture changes или agent brain;</li>
+          <li>индексация сырых транскриптов в RAG без curation;</li>
+          <li>WORM/юридически сертифицированный архив;</li>
+          <li>автоматическая коррекция противоречивого Notion state без review;</li>
+          <li>прямые смысловые writes агентов через Notion MCP в обход State Adapter.</li>
+        </ul></article>
+      </div>
+      <h3>Измеримые критерии</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Метрика</th><th>Цель v1</th><th>Проверка</th></tr></thead>
+        <tbody>
+          <tr><td>Traceability operational entity → source</td><td>100% созданных Decision/Task/Open Question имеют хотя бы один SourceEvent или явно помечены <code>source_missing</code> и не допускаются к approval.</td><td>Ежедневный integrity query.</td></tr>
+          <tr><td>Semantic audit coverage</td><td>100% State Adapter writes имеют exact old/new. Не менее 99% прямых UI-изменений обнаружены и классифицированы как reconstructed exact либо <code>UNRECONCILED</code>; ложная exact-гарантия запрещена.</td><td>Сверка Notion <code>last_edited_time</code> с Changes и shadow snapshots.</td></tr>
+          <tr><td>Agent brain safety</td><td>0 activation без ApprovalEvent Андрея и совпадающего artifact hash.</td><td>Негативные acceptance-тесты и audit query.</td></tr>
+          <tr><td>Idempotency</td><td>Повторный SourceEvent/webhook/OperationalPackage не создаёт дубль сущности или ChangeEvent.</td><td>Повторная доставка одного payload 3 раза.</td></tr>
+          <tr><td>Briefing readiness</td><td>Для каждого Active/Operating проекта подготовлен briefing packet к заданному окну; разговор укладывается в 10–15 минут.</td><td>Briefings data source + timestamps.</td></tr>
+          <tr><td>Recovery</td><td>Текущее operational state детерминированно восстанавливается по Replay Contract из approved schema, trusted checkpoint и непрерывной цепочки ChangeEvents без истории чата Hermes.</td><td>Disaster recovery rehearsal с проверкой state version/hash.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </details>
+
+  <details id="topology" open>
+    <summary>4. Целевая топология слоя</summary>
+    <div class="body">
+      <div class="flow" aria-label="Главный поток">
+        <span class="step">Разговор / созвон / чат</span><span class="arrow">→</span>
+        <span class="step">БОТ-расшифровщик</span><span class="arrow">→</span>
+        <span class="step">Obsidian Raw + OperationalPackage</span><span class="arrow">→</span>
+        <span class="step">Hermes Ingest</span><span class="arrow">→</span>
+        <span class="step">Durable Store + entity lease</span><span class="arrow">→</span>
+        <span class="step">State Adapter / Write Dispatcher</span><span class="arrow">→</span>
+        <span class="step">Notion + Audit Writer</span>
+      </div>
+      <div class="grid three">
+        <article class="card"><span class="tag">Control plane</span><h4>Hermes</h4><p>Планирует briefing, принимает packages/events, разрешает проект, применяет policy, создаёт draft state, запускает исполнителей и approval. Не становится базой данных.</p></article>
+        <article class="card fit"><span class="tag ok">Operational plane</span><h4>Notion</h4><p>Текущее человекочитаемое состояние и рабочие очереди. Все agent writes проходят audited State Adapter.</p></article>
+        <article class="card"><span class="tag violet">Memory &amp; audit plane</span><h4>Obsidian + Git</h4><p>Raw sources, packages, briefing, approvals, audit events и snapshots. Записи не редактируются на месте.</p></article>
+        <article class="card"><span class="tag">Execution plane</span><h4>Codex / Antigravity</h4><p>Получают approved ContextManifest/TaskEnvelope, выполняют работу и возвращают ResultEnvelope. Notion не заменяет repo.</p></article>
+        <article class="card"><span class="tag">Knowledge plane</span><h4>RAG</h4><p>Индексирует только approved/curated knowledge с source_ref и version. Live status и raw conversation не являются knowledge.</p></article>
+        <article class="card"><span class="tag">Human plane</span><h4>Андрей / Work / Telegram</h4><p>Андрей утверждает; Work анализирует и предлагает; Telegram доставляет briefing и single-purpose approval actions.</p></article>
+        <article class="card"><span class="tag warn">Coordination plane</span><h4>SQLite WAL на Hermes Base</h4><p>Durable commands, outbox, inbox, idempotency, per-entity leases и replay checkpoints. Это системное хранилище восстановления, а не project memory.</p></article>
+      </div>
+      <p class="callout"><b>Неподвижная граница:</b> Notion сообщает «что сейчас происходит», Obsidian доказывает «откуда это взялось и как менялось», control-repo исполняет «какая точная техническая версия запущена».</p>
+    </div>
+  </details>
+
+  <details id="roles" open>
+    <summary>5. Границы ответственности и права</summary>
+    <div class="body">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Участник</th><th>Читает</th><th>Может создавать / менять</th><th>Запрещено</th></tr></thead>
+        <tbody>
+          <tr><td><b>Андрей</b></td><td>Всё operational state, proposals, sources, audit и evidence согласно доступу.</td><td>Решения, приоритеты, вопросы, ручные corrections; approve/reject/rollback exact version.</td><td>Нет системного запрета; destructive action всё равно должен создать audit event.</td></tr>
+          <tr><td><b>БОТ-расшифровщик</b></td><td>Только входной source и schema/policy extraction.</td><td>Raw transcript, SourceEvent и OperationalPackage со статусом <code>EXTRACTED</code>.</td><td>Прямо менять Project/Task/Decision/Agent; назначать approval; активировать prompt; считать inferred-фразу решением.</td></tr>
+          <tr><td><b>Hermes</b></td><td>Notion current state только через <code>notion_read</code>, approved manuals, source metadata, control-repo envelopes и RAG.</td><td>Draft task/question/decision proposal; StateCommand; status по проверенному RunEvent/ResultEnvelope; briefing; approval request; change proposal.</td><td>Произвольный Notion write; самоутверждение; активация brain без approval; удаление raw/audit; изменение architecture baseline; запись product-кода.</td></tr>
+          <tr><td><b>State Adapter</b></td><td>Переданный command, текущую entity, shadow snapshot, durable queue и entity lease.</td><td>Только schema-valid mutation + ChangeEvent/outbox при действующем fencing token; встроенный single Notion Write Dispatcher владеет write credential.</td><td>Передавать write credential worker/агенту; писать без lease; рассуждать, выбирать приоритет, обходить approval, скрывать partial failure.</td></tr>
+          <tr><td><b>Durable Coordination Store</b></td><td>Только служебные StateCommand/event IDs и recovery metadata.</td><td>Транзакционно хранит commands, outbox, inbox, idempotency, leases, checkpoints.</td><td>Хранить project knowledge, prompt content, secrets или подменять Notion/Obsidian/control-repo.</td></tr>
+          <tr><td><b>Audit Writer</b></td><td>Validated Source/Change/Approval/Briefing events.</td><td>Новый append-only файл, hash manifest и Git commit.</td><td>Редактировать/удалять существующее событие; менять Notion state.</td></tr>
+          <tr><td><b>Codex Implementer</b></td><td>TaskEnvelope, ContextManifest, approved brain, repo, нужный source excerpt.</td><td>Branch/PR, code/config/prompt candidate в write_scope, ResultEnvelope.</td><td>Прямое operational-state управление; approval собственной версии; merge/activate без разрешённого gate.</td></tr>
+          <tr><td><b>QA / Reviewer</b></td><td>Candidate, criteria и source evidence.</td><td>QA verdict/evidence; defect Task proposal.</td><td>Менять проверяемый candidate и ставить себе PASS.</td></tr>
+          <tr><td><b>Work</b></td><td>Выбранный Notion/Obsidian/RAG контекст.</td><td>Анализ, документ, Decision/ACP proposal через Hermes.</td><td>Автоматическая активация prompt, прямой production write или роль durable queue.</td></tr>
+          <tr><td><b>RAG Curator</b></td><td>Approved decisions/manuals/results и их sources.</td><td>Knowledge candidate → curated version.</td><td>Индексировать live WIP, secrets или raw assertions как проверенный факт.</td></tr>
+          <tr><td><b>n8n</b></td><td>Только payload, необходимый connector flow.</td><td>Доставка, форматирование, retry, notification.</td><td>Принимать решения, владеть backlog, approval или orchestration logic.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="warning"><b>Notion permission boundary:</b> используются физически разные integration profiles. <code>notion_read</code> выдан Work/Codex/Hermes и не экспонирует create/update/archive tools. <code>notion_state_adapter</code> — единственная integration с semantic write и доступна только процессу State Adapter. Правило обеспечивается credentials/capabilities, а не prompt-инструкцией. Явная UI-правка Андрея остаётся отдельным входом через webhook/reconciler.</p>
+    </div>
+  </details>
+
+  <details id="truth" open>
+    <summary>6. Источники истины по типам данных</summary>
+    <div class="body">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Тип данных</th><th>Authority</th><th>Проекции / ссылки</th><th>Правило разрешения конфликта</th></tr></thead>
+        <tbody>
+          <tr><td>Raw audio/chat/transcript</td><td><b>Obsidian Raw</b> + manifest на тяжёлый файл/File Bridge</td><td>Notion Source Event содержит path, URI, hash и metadata.</td><td>Raw не редактируется; correction — новый source, связанный через <code>corrects</code>.</td></tr>
+          <tr><td>OperationalPackage</td><td><b>Obsidian</b>, immutable version</td><td>Notion Source Event/Briefing relation.</td><td>Новая extraction создаёт package vN+1; старый не перезаписывается.</td></tr>
+          <tr><td>Mutable Project/Task/Decision/Question state</td><td><b>Notion после ACP-001</b></td><td>TaskEnvelope/Decision artifact snapshots в control-repo; audit в Obsidian.</td><td>До cutover authority у baseline control-repo. После cutover Notion state_version выигрывает, если audit COMMITTED.</td></tr>
+          <tr><td>Commands, outbox, inbox, idempotency, entity leases, replay checkpoints</td><td><b>SQLite WAL на Hermes Base</b></td><td>Backup + integrity/recovery report; committed semantic events — в Obsidian.</td><td>RAM/Notion/Obsidian не заменяют store. После restart незавершённые команды продолжаются из durable state machine; при потере DB выполняется restore/replay.</td></tr>
+          <tr><td>TaskEnvelope, ContextManifest, RunEvent, ResultEnvelope</td><td><b>GitHub/control-repo</b></td><td>Notion хранит IDs, status projection, SHA/PR/result links.</td><td>Технический статус DONE невозможен без ResultEnvelope/QA evidence.</td></tr>
+          <tr><td>Код, deployment config, prompt/brain artifact</td><td><b>GitHub/control-repo</b></td><td>Notion registry + approval; Obsidian approved snapshot/hash.</td><td>Runtime загружает только artifact по approved hash.</td></tr>
+          <tr><td>Agent operational registry</td><td><b>Notion Agents</b></td><td>Agent Manifest в control-repo.</td><td>Notion определяет активность/назначение; manifest определяет исполнимую конфигурацию. Несовпадение блокирует run.</td></tr>
+          <tr><td>Operating Manual</td><td><b>Notion current approved page</b></td><td>Immutable snapshot в Obsidian; executable rules — в control-repo.</td><td>Если правило влияет на runtime, оно не действует до approved artifact в control-repo.</td></tr>
+          <tr><td>Audit Change/Approval/Decision event</td><td><b>Obsidian append-only + Git</b></td><td>Notion Changes/Approvals — searchable projection.</td><td>Notion row без audit_path имеет <code>AUDIT_PENDING</code> и не может запускать privileged action.</td></tr>
+          <tr><td>Curated reusable knowledge</td><td><b>RAG</b></td><td>Source refs ведут в approved Notion/control-repo/Obsidian artifact.</td><td>При расхождении RAG помечается stale и переиндексируется из authority.</td></tr>
+          <tr><td>Telegram messages</td><td>Не authority</td><td>Команда/approval callback становится SourceEvent.</td><td>Без сохранённого event_id сообщение не меняет system state.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </details>
+
+  <details id="contracts" open>
+    <summary>7. Идентификаторы, события и новые контракты</summary>
+    <div class="body">
+      <h3>Стабильные ID</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Сущность</th><th>Префикс</th><th>Пример</th></tr></thead>
+        <tbody>
+          <tr><td>Project / Task / Decision / Question</td><td><code>PRJ / TSK / DEC / QST</code></td><td><code>PRJ-ACPARTNER</code>, <code>TSK-01JXYZ...</code></td></tr>
+          <tr><td>Agent / Brain Version</td><td><code>AGT / BRN</code></td><td><code>AGT-HERMES-DIRECTOR</code>, <code>BRN-01JXYZ...</code></td></tr>
+          <tr><td>Source / Package / Change</td><td><code>SRC / OPK / CHG</code></td><td><code>SRC-01JXYZ...</code>, <code>OPK-01JXYZ...</code></td></tr>
+          <tr><td>Approval / Briefing / Event</td><td><code>APR / BRF / EVT</code></td><td><code>APR-01JXYZ...</code>, <code>BRF-20260813-PRJ...</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Для машинных ID использовать ULID или UUIDv7; timestamp — ISO 8601 UTC. Человекочитаемое имя может меняться, ID — никогда.</p>
+
+      <h3>Canonical Hash Contract: <code>AIOS-HASH-V1</code></h3>
+      <p>Каждое поле hash сопровождается <code>hash_profile = AIOS-HASH-V1</code>. Формат digest: <code>sha256:&lt;64 lowercase hex&gt;</code>. Hash без указанного profile не допускается к approval, integrity check или replay.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Тип данных</th><th>Что именно хешируется</th><th>Canonicalization v1</th></tr></thead>
+        <tbody>
+          <tr><td>Raw binary/audio/video/file</td><td>Точные bytes, полученные на входе до decode, transcription, metadata rewrite или transcode.</td><td>Никакой нормализации. Media derivatives получают отдельный source ID и отдельный hash.</td></tr>
+          <tr><td>Исходный текст пользователя</td><td>Точные исходные bytes, если канал их предоставляет.</td><td><code>content_sha256</code> сохраняет оригинал. Для dedupe/search разрешён отдельный <code>normalized_content_sha256</code>, который никогда не заменяет raw hash.</td></tr>
+          <tr><td>Генерируемый text artifact</td><td>Финальные bytes artifact в control-repo/Obsidian.</td><td>UTF-8, без BOM, line ending LF, ровно один terminal LF; остальной whitespace и Unicode не меняются. После расчёта hash formatter не запускается.</td></tr>
+          <tr><td>JSON contract/event/snapshot</td><td>Canonical JSON bytes.</td><td>RFC 8785 JCS, UTF-8 без BOM: детерминированный порядок object keys, сохранение различия absent/null, schema-valid numbers. Arrays сохраняют порядок; только поля, явно объявленные schema как unordered sets, предварительно сортируются по stable ID.</td></tr>
+          <tr><td>Semantic Notion state</td><td>Schema-versioned projection только semantic fields.</td><td>Исключить API metadata, icon/cover, view/filter/sort, formula/rollup и системные edited timestamps. Relations представлять stable entity IDs; unordered relations сортировать. Dates приводить к UTC ISO 8601. Затем применить canonical JSON.</td></tr>
+          <tr><td>Brain/prompt/config approval artifact</td><td>Точные repository bytes утверждаемого artifact.</td><td>Approval связывает <code>artifact_uri + commit_sha + byte_length + hash_profile + artifact_sha256</code>. Любое изменение bytes или profile инвалидирует approval.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="danger"><b>Hash failure rule:</b> несовпадение digest, canonicalization profile или schema version переводит source/artifact/event в <code>QUARANTINED</code>; система не пытается «исправить» hash пересчётом поверх неизвестного представления.</p>
+
+      <h3>SourceEvent</h3>
+      <pre>{
+  "schema_version": "1.0.0",
+  "event_id": "EVT-...",
+  "source_id": "SRC-...",
+  "source_type": "conversation|call|voice_note|chat|notion_webhook|run_result|approval",
+  "occurred_at": "2026-08-13T18:30:00Z",
+  "received_at": "...",
+  "actor_refs": ["telegram:user:..."],
+  "project_hint": "...",
+  "correlation_id": "...",
+  "raw_uri": "obsidian://open?...",
+  "raw_path": "10_Raw/.../SRC-....md",
+  "hash_profile": "AIOS-HASH-V1",
+  "content_sha256": "...",
+  "idempotency_key": "sha256(source+timestamp+content)",
+  "sensitivity": "internal",
+  "status": "RECEIVED|VERIFIED|QUARANTINED|PROCESSED"
+}</pre>
+
+      <h3>OperationalPackage</h3>
+      <pre>{
+  "schema_version": "1.0.0",
+  "package_id": "OPK-...",
+  "source_id": "SRC-...",
+  "extraction_run_id": "RUN-...",
+  "project_resolution": {"project_id": "PRJ-...", "confidence": 0.96},
+  "summary": "...",
+  "decisions": [{"statement":"...", "mode":"explicit|inferred", "source_anchors":["00:12:44-00:13:08"]}],
+  "tasks": [{"title":"...", "owner_hint":"...", "acceptance_hint":"...", "mode":"explicit|inferred", "source_anchors":[]}],
+  "commitments": [],
+  "process_changes": [],
+  "agent_instruction_candidates": [],
+  "risks": [],
+  "contradictions": [],
+  "open_questions": [],
+  "next_actions": [],
+  "ambiguity_flags": [],
+  "hash_profile": "AIOS-HASH-V1",
+  "content_sha256": "...",
+  "status": "EXTRACTED|VALIDATED|NEEDS_PROJECT|NEEDS_REVIEW|INGESTED"
+}</pre>
+      <p class="callout"><b>Extraction rule:</b> каждый элемент обязан иметь <code>source_anchors[]</code> и <code>mode</code>. Anchor содержит timecode для media либо стабильный диапазон line/block ID для текста. Inferred item никогда не становится Approved Decision или Active Agent Instruction автоматически.</p>
+
+      <h3>StateCommand и ChangeEvent</h3>
+      <pre>StateCommand:
+command_id · entity_type · entity_id · entity_key · expected_state_version
+operation · patch[] · reason · source_event_ids[] · decision_id
+initiator · correlation_id · idempotency_key · approval_id?
+status · lease_owner? · fencing_token? · lease_expires_at?
+
+ChangeEvent:
+change_id · command_id · entity_type · entity_id · operation · changed_fields[]
+old_values · new_values · initiator[] · reason · source_event_ids[]
+decision_id · correlation_id · causation_change_id? · occurred_at
+notion_event_id · semantic_hash_profile
+before_hash · after_hash
+state_version_before · state_version_after · audit_path · audit_status</pre>
+      <p><code>lease_owner/fencing_token/lease_expires_at</code> назначает State Adapter, а не вызывающий агент. Для обычной semantic mutation <code>state_version_after = state_version_before + 1</code>; другая дельта запрещена schema validation и replay.</p>
+
+      <h3>ApprovalEvent и BriefingPacket</h3>
+      <pre>ApprovalEvent:
+approval_id · target_type · target_id · target_version · artifact_hash_profile
+artifact_sha256 · artifact_byte_length · artifact_commit_sha
+requested_by · requested_at · decision · decided_by · decided_at
+channel · source_event_id · comment · expires_at · activation_event_id?
+
+BriefingPacket:
+briefing_id · project_id · period_start · period_end · prepared_at
+current_health · completed_with_evidence[] · changed_since_last[]
+blocked[] · open_questions_for_andrey[] · approvals_pending[]
+next_24h[] · proposed_agenda[] · source_event_ids[] · state_snapshot_hash</pre>
+    </div>
+  </details>
+
+  <details id="transcriber" open>
+    <summary>8. БОТ-расшифровщик: функциональное ТЗ</summary>
+    <div class="body">
+      <h3>Назначение</h3>
+      <p>Преобразовать разговор, созвон, голосовую заметку, переписку или готовый transcript в два связанных артефакта: <b>неизменённый первоисточник</b> и <b>структурированный OperationalPackage</b>. Бот не является Hermes, Project Manager или authority.</p>
+      <h3>Pipeline</h3>
+      <ol>
+        <li><b>Intake.</b> Получить файл/текст/ссылку, actor, время и project hint; вычислить idempotency key.</li>
+        <li><b>Raw persistence.</b> До анализа записать SourceEvent и raw content в Obsidian; большие audio/video — в File Bridge с checksum manifest.</li>
+        <li><b>Transcription.</b> Если вход не текстовый — создать transcript с speaker labels и timestamps; неопознанные участки отметить, не додумывать.</li>
+        <li><b>Extraction.</b> Выделить решения, задачи, обязательства, изменения процессов/ответственности, кандидаты инструкций агентам, риски, противоречия, вопросы и следующее действие.</li>
+        <li><b>Grounding.</b> Каждый extracted item получает цитируемый anchor: timestamp, message ID или block ID.</li>
+        <li><b>Validation.</b> JSON Schema, обязательные поля, отсутствие orphan items, content hash, явное разделение explicit/inferred.</li>
+        <li><b>Delivery.</b> Сохранить OperationalPackage в Obsidian и отправить Hermes событие <code>operational_package.ready</code>.</li>
+      </ol>
+      <h3>Hermes ingest</h3>
+      <ol>
+        <li>проверить signature/hash/schema/idempotency;</li>
+        <li>сопоставить проект; при confidence ниже порога — создать <code>NEEDS_PROJECT</code>, ничего не применять;</li>
+        <li>найти дубли и существующие Task/Decision/Question;</li>
+        <li>создать DRAFT Task/Open Question; explicit Decision — PROPOSED, inferred Decision — NEEDS_REVIEW;</li>
+        <li>кандидат изменения мозга направить в Brain Version workflow;</li>
+        <li>применить операции через State Adapter, получить ChangeEvents и audit paths;</li>
+        <li>пометить package <code>INGESTED</code> и сохранить результат маппинга.</li>
+      </ol>
+      <h3>Обязательные негативные правила</h3>
+      <ul>
+        <li>не объединять два проекта только из-за похожих терминов;</li>
+        <li>не превращать обещание «подумаю» в Task со статусом READY;</li>
+        <li>не считать вопрос решением;</li>
+        <li>не назначать Андрею или агенту обязательство без явного speaker/anchor;</li>
+        <li>не переписывать raw transcript после extraction;</li>
+        <li>не отправлять весь transcript Codex: только ContextManifest и релевантные source excerpts.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details id="notion" open>
+    <summary>9. Notion: точная схема operational state</summary>
+    <div class="body">
+      <p>В API использовать Notion data sources и заголовок <code>Notion-Version: 2026-03-11</code>. В интерфейсе ниже они названы привычным словом «таблицы». Длинный текст хранится в page body; properties содержат индексируемые поля и ссылки. Secrets не хранятся.</p>
+      <h3>Общие properties для всех таблиц</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Property</th><th>Notion type</th><th>Обяз.</th><th>Правило</th></tr></thead>
+        <tbody>
+          <tr><td><code>Name</code></td><td>title</td><td>Да</td><td>Человекочитаемое название; не используется как ID.</td></tr>
+          <tr><td><code>Entity ID</code></td><td>rich_text</td><td>Да</td><td>Стабильный внешний ID; immutable после create.</td></tr>
+          <tr><td><code>State Version</code></td><td>number</td><td>Да</td><td>Вторая защита после per-entity single-writer; ровно +1 на COMMITTED semantic mutation. Само поле не считается атомарным compare-and-swap.</td></tr>
+          <tr><td><code>Source Events</code></td><td>relation → Source Events</td><td>Да для semantic entity</td><td>Минимум один source; исключение — migration с маркировкой.</td></tr>
+          <tr><td><code>Last Change</code></td><td>relation → Changes</td><td>Да после первого update</td><td>Последний COMMITTED ChangeEvent.</td></tr>
+          <tr><td><code>Last Command ID</code></td><td>rich_text</td><td>Да после первого adapter write</td><td>Adapter-only marker для idempotency и <code>OUTCOME_UNKNOWN</code> reconciliation; не является business field.</td></tr>
+          <tr><td><code>Audit Status</code></td><td>status</td><td>Да</td><td><code>COMMITTED / AUDIT_PENDING / UNRECONCILED / ERROR</code>.</td></tr>
+          <tr><td><code>Created</code>, <code>Created By</code></td><td>created_time / created_by</td><td>Да</td><td>Системные поля Notion.</td></tr>
+          <tr><td><code>Last Edited</code>, <code>Last Edited By</code></td><td>last_edited_time / last_edited_by</td><td>Да</td><td>Используются reconciliation, но не заменяют ChangeEvent.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>9.1 Projects</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Project ID</code></td><td>rich_text</td><td>Дублирует Entity ID с префиксом PRJ; ключ интеграций.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>INBOX / DISCOVERY / READY / ACTIVE / ON_HOLD / OPERATING / ARCHIVED.</td></tr>
+        <tr><td><code>Lifecycle Stage</code></td><td>select</td><td>build / launch / operate / evolve.</td></tr>
+        <tr><td><code>Health</code></td><td>select</td><td>GREEN / AMBER / RED / UNKNOWN; reason в page body/incident.</td></tr>
+        <tr><td><code>Goal</code></td><td>rich_text</td><td>Короткая current goal; полный scope в body.</td></tr>
+        <tr><td><code>Priority</code></td><td>select</td><td>P0 / P1 / P2 / P3.</td></tr>
+        <tr><td><code>Owner</code></td><td>people</td><td>Андрей или явно назначенный человек.</td></tr>
+        <tr><td><code>Tasks</code>, <code>Decisions</code>, <code>Open Questions</code>, <code>Agents</code></td><td>relations</td><td>Обратные связи с operational entities.</td></tr>
+        <tr><td><code>Repo URL</code></td><td>url</td><td>GitHub/control-repo продукта.</td></tr>
+        <tr><td><code>Obsidian Index URI</code></td><td>url</td><td>Открывает project index в Vault.</td></tr>
+        <tr><td><code>Briefing Enabled</code></td><td>checkbox</td><td>По умолчанию true для ACTIVE/OPERATING.</td></tr>
+        <tr><td><code>Briefing Window</code></td><td>rich_text</td><td>Время + IANA timezone; не предполагать системную timezone.</td></tr>
+        <tr><td><code>Last Briefing</code>, <code>Next Briefing</code></td><td>date</td><td>Контроль ежедневного pipeline.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.2 Tasks / Backlog</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Task ID</code>, <code>Project</code></td><td>rich_text / relation</td><td>TSK-ID и ровно один основной Project.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>INBOX / DRAFT / READY / IN_PROGRESS / BLOCKED / QA / AWAITING_APPROVAL / DONE / CANCELLED.</td></tr>
+        <tr><td><code>Type</code></td><td>select</td><td>feature / bug / ops / research / documentation / agent_change / briefing_followup.</td></tr>
+        <tr><td><code>Lifecycle Stage</code>, <code>Priority</code>, <code>Risk</code></td><td>select</td><td>Наследуются/уточняются; risk = LOW/MEDIUM/HIGH/CRITICAL.</td></tr>
+        <tr><td><code>Assigned Agent</code>, <code>Code Owner</code></td><td>relations → Agents</td><td>Для code task ровно один Code Owner.</td></tr>
+        <tr><td><code>Parent Task</code>, <code>Depends On</code></td><td>self relations</td><td>Без циклов; валидирует adapter.</td></tr>
+        <tr><td><code>Acceptance Summary</code></td><td>rich_text</td><td>Кратко; полный acceptance в TaskEnvelope/body.</td></tr>
+        <tr><td><code>Approval Policy</code></td><td>select</td><td>NONE / OWNER_BEFORE_RUN / OWNER_BEFORE_RELEASE / OWNER_FOR_ACTION.</td></tr>
+        <tr><td><code>Deadline</code>, <code>Next Action</code></td><td>date / rich_text</td><td>Next Action обязателен для незавершённой задачи.</td></tr>
+        <tr><td><code>Base Revision</code>, <code>Latest Run ID</code>, <code>Verified SHA</code></td><td>rich_text</td><td>Проекция control-repo; не редактировать вручную агентами.</td></tr>
+        <tr><td><code>PR / Result URI</code></td><td>url</td><td>Ссылка на техническое evidence.</td></tr>
+        <tr><td><code>Decision</code>, <code>Briefing</code></td><td>relations</td><td>Почему задача появилась и где обсуждалась.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.3 Decisions</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Decision ID</code>, <code>Project</code></td><td>rich_text / relation</td><td>DEC-ID; global decision может не иметь Project, но имеет Scope.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>PROPOSED / NEEDS_REVIEW / AWAITING_APPROVAL / APPROVED / REJECTED / SUPERSEDED.</td></tr>
+        <tr><td><code>Type</code></td><td>select</td><td>architecture / product / operational / process / agent_brain / risk.</td></tr>
+        <tr><td><code>Statement</code></td><td>rich_text</td><td>Одно недвусмысленное принятое/предлагаемое решение.</td></tr>
+        <tr><td><code>Options Summary</code>, <code>Rationale</code></td><td>rich_text</td><td>Полные варианты и последствия — в body.</td></tr>
+        <tr><td><code>Decision Owner</code>, <code>Approved By</code></td><td>people</td><td>Для architecture/brain approval = Андрей.</td></tr>
+        <tr><td><code>Decided At</code></td><td>date</td><td>Заполняется только при Approved/Rejected.</td></tr>
+        <tr><td><code>Approval</code></td><td>relation → Approvals</td><td>Обязательно для gated decision.</td></tr>
+        <tr><td><code>Supersedes</code></td><td>self relation</td><td>Старое решение не редактируется; новое supersedes.</td></tr>
+        <tr><td><code>Resulting Tasks</code>, <code>ACP ID</code></td><td>relation / rich_text</td><td>Трассировка исполнения и architecture proposal.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.4 Open Questions</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Question ID</code>, <code>Project</code></td><td>rich_text / relation</td><td>QST-ID + scope.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>OPEN / NEEDS_ANDREY / RESEARCHING / ANSWERED / DROPPED.</td></tr>
+        <tr><td><code>Impact</code></td><td>select</td><td>BLOCKING / HIGH / NORMAL / LOW.</td></tr>
+        <tr><td><code>Owner</code>, <code>Asked By</code></td><td>people / rich_text</td><td>Кто отвечает и кто/какой agent поставил.</td></tr>
+        <tr><td><code>Due</code>, <code>Answer Summary</code></td><td>date / rich_text</td><td>Ответ без source не переводит в ANSWERED.</td></tr>
+        <tr><td><code>Blocking Tasks</code>, <code>Answer Decision</code></td><td>relations</td><td>Влияние вопроса на flow.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.5 Agents</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Agent ID</code></td><td>rich_text</td><td>AGT-ID, immutable.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>PROPOSED / ACTIVE / PAUSED / DEGRADED / RETIRED.</td></tr>
+        <tr><td><code>Role</code>, <code>Runtime</code></td><td>select</td><td>Runtime: HERMES / CODEX / WORK / ANTIGRAVITY / EXTERNAL.</td></tr>
+        <tr><td><code>Scope</code>, <code>Prohibited Actions</code></td><td>rich_text</td><td>Краткая policy; полный manifest по URI.</td></tr>
+        <tr><td><code>Permission Profile</code></td><td>select</td><td>READ_ONLY / PROPOSE / STATE_WRITE / CODE_WRITE / CONTROLLED_RELEASE.</td></tr>
+        <tr><td><code>Projects</code></td><td>relation → Projects</td><td>Пусто = global role, но scope обязателен.</td></tr>
+        <tr><td><code>Active Brain Version</code></td><td>relation → Brain Versions</td><td>Ровно одна ACTIVE; hash должен совпасть с manifest.</td></tr>
+        <tr><td><code>Agent Manifest URI</code></td><td>url</td><td>Canonical control-repo artifact.</td></tr>
+        <tr><td><code>Last Run</code>, <code>Last Heartbeat</code></td><td>date</td><td>Operational health, не история run.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.6 Agent Brain / Prompt Versions</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Brain Version ID</code>, <code>Agent</code></td><td>rich_text / relation</td><td>BRN-ID и один target agent.</td></tr>
+        <tr><td><code>Version</code></td><td>rich_text</td><td>SemVer; не переиспользовать номер.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>DRAFT / PROPOSED / EVALUATING / AWAITING_APPROVAL / APPROVED / ACTIVE / REJECTED / SUPERSEDED / ROLLED_BACK / ACTIVATION_FAILED.</td></tr>
+        <tr><td><code>Change Type</code></td><td>multi_select</td><td>prompt / tools / permissions / memory_policy / model / full.</td></tr>
+        <tr><td><code>Summary</code>, <code>Reason</code>, <code>Risk</code></td><td>rich_text / select</td><td>Почему нужно и что может сломаться.</td></tr>
+        <tr><td><code>Base Version</code>, <code>Rollback Target</code></td><td>self relations</td><td>Точный predecessor/known-good version.</td></tr>
+        <tr><td><code>Artifact URI</code>, <code>Diff URI</code></td><td>url</td><td>Immutable candidate в control-repo.</td></tr>
+        <tr><td><code>Artifact SHA-256</code>, <code>Hash Profile</code></td><td>rich_text</td><td>Approval и activation привязаны к digest по <code>AIOS-HASH-V1</code>.</td></tr>
+        <tr><td><code>Artifact Commit SHA</code>, <code>Byte Length</code></td><td>rich_text / number</td><td>Входят в immutable approval target.</td></tr>
+        <tr><td><code>Evaluation Result</code></td><td>rich_text</td><td>Ссылка/summary eval; обязателен до approval кроме emergency rollback.</td></tr>
+        <tr><td><code>Approval</code></td><td>relation → Approvals</td><td>Обязателен для APPROVED/ACTIVE.</td></tr>
+        <tr><td><code>Activated At</code>, <code>Activated By</code></td><td>date / rich_text</td><td>Hermes выполняет gate, но actor approval остаётся Андрей.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.7 Operating Manual</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Manual ID</code>, <code>Topic</code></td><td>rich_text / title</td><td>MAN-ID; один topic/scope на страницу.</td></tr>
+        <tr><td><code>Scope</code></td><td>select</td><td>GLOBAL / PROJECT / PRODUCT / AGENT.</td></tr>
+        <tr><td><code>Status</code>, <code>Version</code></td><td>status / rich_text</td><td>DRAFT / REVIEW / APPROVED / ACTIVE / SUPERSEDED.</td></tr>
+        <tr><td><code>Projects</code>, <code>Agents</code></td><td>relations</td><td>К кому применяется.</td></tr>
+        <tr><td><code>Effective From</code>, <code>Supersedes</code></td><td>date / self relation</td><td>Новая версия вместо редактирования active history.</td></tr>
+        <tr><td><code>Decision</code>, <code>Approval</code></td><td>relations</td><td>Обязательны для значимых policy changes.</td></tr>
+        <tr><td><code>Snapshot URI</code>, <code>Content Hash</code></td><td>url / rich_text</td><td>Immutable approved snapshot в Obsidian/control-repo.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.8 Changes</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Change ID</code>, <code>Entity Type</code>, <code>Entity ID</code></td><td>rich_text / select / rich_text</td><td>CHG-ID и точная target entity.</td></tr>
+        <tr><td><code>Operation</code></td><td>select</td><td>CREATE / UPDATE / STATUS_TRANSITION / RELATION / ARCHIVE / SCHEMA_CHANGE.</td></tr>
+        <tr><td><code>Changed Fields</code></td><td>multi_select</td><td>Имена semantic fields.</td></tr>
+        <tr><td><code>Old Value Summary</code>, <code>New Value Summary</code></td><td>rich_text</td><td>Коротко; полный normalized JSON в audit file.</td></tr>
+        <tr><td><code>Initiator</code>, <code>Initiator Type</code></td><td>rich_text / select</td><td>person / bot / agent / integration; webhook author IDs сохраняются.</td></tr>
+        <tr><td><code>Reason</code></td><td>rich_text</td><td>Обязателен для agent command; UI edit без reason получает NEEDS_REASON.</td></tr>
+        <tr><td><code>Decision</code>, <code>Source Events</code></td><td>relations</td><td>Почему и на основании чего.</td></tr>
+        <tr><td><code>Occurred At</code>, <code>Correlation ID</code></td><td>date / rich_text</td><td>Порядок и сквозной trace.</td></tr>
+        <tr><td><code>Before Hash</code>, <code>After Hash</code>, <code>Hash Profile</code></td><td>rich_text</td><td>Hash schema-versioned semantic projection по <code>AIOS-HASH-V1</code>.</td></tr>
+        <tr><td><code>Audit Path</code>, <code>Status</code></td><td>rich_text / status</td><td>COMMITTED / AUDIT_PENDING / UNRECONCILED / FAILED.</td></tr>
+        <tr><td><code>Notion Event ID</code></td><td>rich_text</td><td>Idempotency webhook reconciliation.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.9 Source Events</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Source ID</code>, <code>Type</code></td><td>rich_text / select</td><td>RAW_TRANSCRIPT / OPERATIONAL_PACKAGE / BRIEFING / APPROVAL / RUN_RESULT / NOTION_WEBHOOK / EXTERNAL.</td></tr>
+        <tr><td><code>Source System</code></td><td>select</td><td>TELEGRAM / WORK / BOT_TRANSCRIBER / NOTION / GITHUB / RAG / OBSIDIAN.</td></tr>
+        <tr><td><code>Projects</code>, <code>Parent Source</code></td><td>relations</td><td>Source может относиться к нескольким проектам; derived source указывает parent.</td></tr>
+        <tr><td><code>Occurred At</code>, <code>Actor Refs</code></td><td>date / rich_text</td><td>Когда и кем создан исходный факт.</td></tr>
+        <tr><td><code>Raw Path</code>, <code>Obsidian URI</code></td><td>rich_text / url</td><td>Стабильный vault-relative path + кликабельный URI.</td></tr>
+        <tr><td><code>Content SHA-256</code>, <code>Hash Profile</code>, <code>Correlation ID</code></td><td>rich_text</td><td>Integrity по <code>AIOS-HASH-V1</code> и trace.</td></tr>
+        <tr><td><code>Normalized Content SHA-256</code></td><td>rich_text</td><td>Опциональный dedupe/search hash; никогда не заменяет raw content hash.</td></tr>
+        <tr><td><code>Processing Status</code></td><td>status</td><td>RECEIVED / VERIFIED / EXTRACTED / INGESTED / QUARANTINED / FAILED.</td></tr>
+        <tr><td><code>Confidence</code>, <code>Sensitivity</code></td><td>number / select</td><td>Confidence только для derived; sensitivity управляет access/retention.</td></tr>
+        <tr><td><code>Related Tasks/Decisions/Questions/Changes</code></td><td>relations</td><td>Обратная traceability.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.10 Approvals</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Approval ID</code>, <code>Type</code></td><td>rich_text / select</td><td>BRAIN_ACTIVATION / ACP / MANUAL / RISKY_ACTION / RELEASE / ROLLBACK.</td></tr>
+        <tr><td><code>Target Type/ID/Version</code></td><td>rich_text</td><td>Недвусмысленный target.</td></tr>
+        <tr><td><code>Artifact SHA-256</code>, <code>Hash Profile</code></td><td>rich_text</td><td>Обязательны для versioned artifact; profile = <code>AIOS-HASH-V1</code>.</td></tr>
+        <tr><td><code>Artifact Commit SHA</code>, <code>Byte Length</code></td><td>rich_text / number</td><td>Дополняют exact target и проверяются перед activation.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>PENDING / APPROVED / REJECTED / EXPIRED / CANCELLED / CONSUMED. Поле adapter-only; ручное редактирование не является решением.</td></tr>
+        <tr><td><code>Requested By/At</code>, <code>Decided By/At</code></td><td>rich_text / date</td><td>Decided By должен совпасть с allowlist Андрея.</td></tr>
+        <tr><td><code>Channel</code>, <code>Single-use Token ID</code></td><td>select / rich_text</td><td>TELEGRAM / NOTION_ACTION; token не содержит secret.</td></tr>
+        <tr><td><code>Approve Action URL</code>, <code>Reject Action URL</code></td><td>url</td><td>Открывают контролируемый Approval UI/endpoint и создают ApprovalCommand; не меняют Status напрямую.</td></tr>
+        <tr><td><code>Source Event</code>, <code>Decision</code></td><td>relations</td><td>Источник запроса и formal decision.</td></tr>
+        <tr><td><code>Expires At</code>, <code>Activation Event ID</code></td><td>date / rich_text</td><td>Approved action consumes approval один раз.</td></tr>
+      </tbody></table></div>
+
+      <h3>9.11 Briefings</h3>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Type</th><th>Правило</th></tr></thead><tbody>
+        <tr><td><code>Briefing ID</code>, <code>Project</code></td><td>rich_text / relation</td><td>BRF-ID; один project на session.</td></tr>
+        <tr><td><code>Status</code></td><td>status</td><td>SCHEDULED / PREPARED / IN_PROGRESS / PROCESSING / CLOSED / SKIPPED / FAILED.</td></tr>
+        <tr><td><code>Scheduled/Started/Ended At</code></td><td>date</td><td>Контроль cadence и длительности.</td></tr>
+        <tr><td><code>Input Snapshot Hash</code></td><td>rich_text</td><td>Что именно Hermes видел при подготовке.</td></tr>
+        <tr><td><code>Raw Source</code>, <code>Operational Package</code></td><td>relations → Source Events</td><td>Разговор и extracted result.</td></tr>
+        <tr><td><code>Decisions/Tasks/Questions</code></td><td>relations</td><td>Что появилось из briefing.</td></tr>
+        <tr><td><code>Summary</code>, <code>Next Briefing</code></td><td>rich_text / date</td><td>Краткий close-out и следующая встреча.</td></tr>
+        <tr><td><code>Missing Data</code></td><td>rich_text</td><td>Что не позволило провести briefing полноценно.</td></tr>
+      </tbody></table></div>
+
+      <h3>Semantic audit fields</h3>
+      <p>Audit обязателен для: status, priority, owner/agent/code owner, goal/scope, lifecycle, health, deadline, acceptance, approval policy, source links, decision statement/status, question answer/status, agent runtime/permissions/scope/active brain, manual content/status/version и relations, меняющих ответственность. Не считать semantic change: view/sort/filter, icon/cover, формула/rollup, системный <code>last_edited_time</code>, визуальное форматирование без изменения смысла.</p>
+    </div>
+  </details>
+
+  <details id="obsidian" open>
+    <summary>10. Obsidian Vault: raw memory, snapshots и audit</summary>
+    <div class="body">
+      <pre>AI-OS-Vault/
+├── 00_System/
+│   ├── schemas/                  # JSON Schema и версия контрактов
+│   ├── policies/                 # append-only, retention, access
+│   └── project-index/            # PRJ-ID → Notion/Git/paths
+├── 10_Raw/
+│   └── YYYY/MM/DD/SRC-ID/
+│       ├── source.md             # исходный текст / описание media
+│       ├── transcript.md         # speaker labels + timestamps
+│       └── attachments.manifest.json
+├── 20_Operational_Packages/
+│   └── YYYY/MM/DD/OPK-ID.md
+├── 30_Briefings/
+│   └── YYYY/MM/DD/PRJ-ID/BRF-ID.md
+├── 40_Audit/
+│   ├── notion-changes/YYYY/MM/DD/CHG-ID.md
+│   ├── approvals/YYYY/MM/DD/APR-ID.md
+│   ├── decisions/YYYY/MM/DD/DEC-ID.md
+│   ├── agent-brains/AGT-ID/BRN-ID.md
+│   └── system-events/YYYY/MM/DD/EVT-ID.md
+├── 50_Snapshots/
+│   ├── notion/YYYY/MM/DD/ENTITY-ID.json
+│   ├── manuals/MAN-ID/version/
+│   └── brains/AGT-ID/version/
+├── 90_Indexes/
+│   ├── by-project/
+│   ├── by-source/
+│   └── by-correlation/
+└── 99_Quarantine/                # failed schema, unknown project, integrity issue</pre>
+      <h3>Write-once policy</h3>
+      <ul>
+        <li>каждый raw/audit файл создаётся один раз по стабильному ID;</li>
+        <li>service account имеет create/append там, где нужно, но не update/delete;</li>
+        <li>исправление создаётся новым событием с <code>corrects</code> или <code>supersedes</code>;</li>
+        <li>frontmatter содержит schema_version, IDs, timestamp, actor, source refs, correlation_id и content_sha256;</li>
+        <li>после batch записи создаётся Git commit; commit SHA сохраняется в Change/Source Event;</li>
+        <li>ночной integrity job пересчитывает hashes и проверяет orphan relations;</li>
+        <li>Obsidian Sync version history может быть дополнительной страховкой, но не заменяет Git/audit policy и имеет ограниченный retention.</li>
+      </ul>
+      <p class="danger"><b>Техническая честность:</b> Obsidian сам по себе не гарантирует неизменяемость. v1 гарантирует логическую append-only модель и обнаружение вмешательства через hash + Git. Для юридического WORM нужен отдельный immutable storage, которого baseline пока не содержит.</p>
+      <h3>Link contract Notion → Obsidian</h3>
+      <p>Каждая Notion entity хранит relation на Source Events; Source Event содержит <code>Raw Path</code>, <code>Obsidian URI</code> и <code>Content SHA-256</code>. Канонический межсистемный идентификатор — не URL, а <code>source_id/event_id</code>: URI может измениться при переносе Vault, ID и hash — нет.</p>
+    </div>
+  </details>
+
+  <details id="audit" open>
+    <summary>11. Журналирование смысловых изменений Notion</summary>
+    <div class="body">
+      <h3>Контролируемая agent/API mutation</h3>
+      <ol>
+        <li>Hermes создаёт StateCommand с <code>entity_key</code>, <code>expected_state_version</code>, reason, source refs, correlation ID и idempotency key.</li>
+        <li>State Adapter в одной SQLite transaction регистрирует command/inbox, проверяет idempotency и получает lease на <code>entity_key = entity_type:entity_id</code> с новым монотонным <code>fencing_token</code>.</li>
+        <li>Если lease уже принадлежит другому живому worker, команда остаётся в очереди. Одновременно для одного entity выполняется только один StateCommand; разные entities могут обрабатываться параллельно.</li>
+        <li>Worker читает текущую entity через <code>notion_state_adapter</code>, нормализует semantic fields по <code>AIOS-HASH-V1</code>, проверяет actor, policy/approval и <code>expected_state_version</code>. Version mismatch прекращает команду без write.</li>
+        <li>В одной SQLite transaction сохраняются command state <code>PREPARED</code>, before snapshot/hash и outbox intent. Только после durable commit разрешён внешний Notion call.</li>
+        <li>Непосредственно перед write Adapter повторно проверяет lease/fencing token и актуальную State Version; затем одним request изменяет только перечисленные в patch semantic properties, увеличивает State Version ровно на 1, записывает <code>Last Command ID</code> и временный <code>Audit Status = AUDIT_PENDING</code>.</li>
+        <li>Adapter повторно читает entity, строит exact old/new diff и after hash. Неожиданное состояние или конкурирующая UI-правка переводят command/entity в <code>UNRECONCILED</code>, а не объявляются успешным exact change.</li>
+        <li>Audit Writer создаёт immutable CHG-ID в Obsidian и Git commit; outbox сохраняет результат/attempt до подтверждения.</li>
+        <li>Notion Changes получает searchable projection, target entity — Last Change и Audit Status COMMITTED. Это projection-only metadata update с тем же Last Command ID: он не увеличивает semantic State Version и не создаёт второй ChangeEvent. Command становится <code>COMMITTED</code>, outbox — <code>ACKED</code>.</li>
+        <li>Lease освобождается только после durable terminal state. При crash он истекает; следующий worker получает больший fencing token, а stale worker больше не может продолжить write.</li>
+        <li>Только после <code>COMMITTED</code> privileged downstream action может продолжиться.</li>
+      </ol>
+
+      <h3>Per-entity single-writer / lease contract</h3>
+      <ul>
+        <li><code>lease_key</code> равен стабильному <code>entity_type:entity_id</code>; одна активная lease на key;</li>
+        <li>acquire/renew/release выполняются транзакционно в SQLite; acquire выдаёт монотонно возрастающий <code>fencing_token</code>;</li>
+        <li>каждая стадия StateCommand проверяет owner, token и expiry; token меньше текущего считается stale и отклоняется;</li>
+        <li>TTL задаётся <code>ENTITY_LEASE_TTL_SECONDS</code>, heartbeat выполняется не реже чем за треть TTL; зависшая команда после expiry может быть продолжена только recovery worker;</li>
+        <li><code>expected_state_version</code> остаётся обязательным, но является второй защитой после single-writer;</li>
+        <li>в v1 только один Notion Write Dispatcher внутри State Adapter держит <code>notion_state_adapter</code> credential и выполняет remote API calls; Hermes и command workers credential не получают;</li>
+        <li>Dispatcher не отправляет второй write для entity, пока предыдущий имеет состояние <code>WRITE_DISPATCHED/OUTCOME_UNKNOWN</code>. Истечение lease во время network call запускает outcome reconciliation, а не параллельный повтор;</li>
+        <li>ручной Notion UI edit не участвует в lease protocol, поэтому требует pre-write reread, post-write verification и webhook reconciliation.</li>
+      </ul>
+
+      <h3>Durable transactional store v1</h3>
+      <p><b>Физическое решение:</b> один SQLite database в WAL mode на Hermes Base по <code>HERMES_STATE_DB_PATH</code>. Он является authority только для orchestration/recovery state и не хранится в RAM, Notion или Obsidian.</p>
+      <pre>SQLite v1 tables:
+commands(command_id PK, entity_key, expected_version, fencing_token, status, payload_hash, timestamps)
+outbox(outbox_id PK, command_id, event_type, payload_json, status, attempt, next_attempt_at)
+inbox(event_id PK, source_system, payload_hash, received_at, processed_at)
+idempotency_keys(idempotency_key PK, request_hash, result_ref, expires_at)
+entity_leases(entity_key PK, owner_id, fencing_token, acquired_at, expires_at, heartbeat_at)
+projection_checkpoints(projection_name, entity_key, state_version, change_id, state_hash, created_at)
+replay_jobs(replay_id PK, scope, checkpoint_ref, status, report_ref, timestamps)</pre>
+      <ul>
+        <li>обязательная версия SQLite: <code>3.51.3+</code>; startup gate проверяет фактически bundled runtime version. Более ранний runtime запрещён из-за исправленного WAL-reset defect;</li>
+        <li>обязательные SQLite settings: <code>journal_mode=WAL</code>, <code>synchronous=FULL</code>, <code>foreign_keys=ON</code>, ограниченный <code>busy_timeout</code>; приложение проверяет возвращённые значения PRAGMA, а не предполагает их применение;</li>
+        <li>command intent и outbox record создаются одной local transaction до external side effect;</li>
+        <li>после restart worker поднимает незавершённые commands/outbox, проверяет фактический внешний state и продолжает state machine идемпотентно;</li>
+        <li>backup выполняется SQLite Online Backup/API в зашифрованное off-host location по расписанию не реже 15 минут и перед deploy/migration; restore тестируется ежемесячно;</li>
+        <li>v1 deployment invariant — один Hermes Base host, использующий этот DB. Переход к нескольким Hermes hosts требует PostgreSQL/эквивалентного transactional store и отдельного Architecture Change Proposal.</li>
+      </ul>
+
+      <h3>Прямая правка Андрея в Notion UI</h3>
+      <ol>
+        <li>Notion webhook проходит HMAC-SHA256 signature validation и idempotency по webhook event ID.</li>
+        <li>Reconciler получает authors, timestamp, updated property IDs и entity ID.</li>
+        <li>Поскольку webhook не содержит полного old/new, Reconciler получает latest entity через API и сравнивает с последним shadow snapshot.</li>
+        <li>Фиксируется один semantic diff «последнее подтверждённое состояние → текущий final state».</li>
+        <li>Если authors несколько, event пришёл не по порядку, snapshot отсутствует или concurrent state ambiguous — Change получает UNRECONCILED; Hermes не действует по нему до review.</li>
+        <li>Если reason отсутствует, создаётся Open Question <code>NEEDS_REASON</code>; правка видна, но privileged action не запускается.</li>
+      </ol>
+      <p class="warning"><b>Гарантия manual UI audit:</b> для State Adapter writes система гарантирует exact old/new. Для прямого UI-edit контракт — best-effort exact reconstruction по последнему trusted shadow snapshot и доступным webhook events. Если точную промежуточную историю, порядок или initiator доказать нельзя, система обязана записать <code>UNRECONCILED</code>; запрещено выдавать восстановленный final diff за доказанную exact sequence.</p>
+
+      <h3>Notion webhook constraints, учтённые в реализации</h3>
+      <ul>
+        <li>webhook — сигнал, а не полный diff; latest content нужно получать API-вызовом;</li>
+        <li>частые изменения агрегируются, доставка обычно до минуты, но допускается до 5 минут;</li>
+        <li>события могут приходить не в хронологическом порядке;</li>
+        <li>повторная доставка возможна при неуспешном acknowledge; использовать event ID и attempt number;</li>
+        <li><code>page.properties_updated</code> содержит authors и IDs изменённых properties, что помогает reconciliation;</li>
+        <li>API rate limit в среднем 3 request/sec; очередь уважает HTTP 429 и <code>Retry-After</code>.</li>
+      </ul>
+
+      <h3>Consistency states</h3>
+      <div class="table-wrap"><table><thead><tr><th>Состояние</th><th>Значение</th><th>Разрешённое действие</th></tr></thead><tbody>
+        <tr><td><code>COMMITTED</code></td><td>Notion mutation и audit event подтверждены.</td><td>Обычный pipeline продолжается.</td></tr>
+        <tr><td><code>AUDIT_PENDING</code></td><td>Notion изменён, audit sink временно недоступен.</td><td>Read разрешён; новые agent writes и privileged actions по entity блокируются.</td></tr>
+        <tr><td><code>UNRECONCILED</code></td><td>Не удаётся доказать точный порядок/old state/initiator.</td><td>Требуется review Андрея/Hermes; автоматические последствия запрещены.</td></tr>
+        <tr><td><code>ERROR</code></td><td>Schema, permissions или integrity failure.</td><td>Incident + retry/quarantine; не скрывать.</td></tr>
+      </tbody></table></div>
+    </div>
+  </details>
+
+  <details id="approval" open>
+    <summary>12. Approval workflow и versioning мозгов/промптов</summary>
+    <div class="body">
+      <div class="flow">
+        <span class="step">Hermes proposal</span><span class="arrow">→</span>
+        <span class="step">Candidate artifact + diff</span><span class="arrow">→</span>
+        <span class="step">Evaluation</span><span class="arrow">→</span>
+        <span class="step">Approval Андрея</span><span class="arrow">→</span>
+        <span class="step">Hash check + activation</span><span class="arrow">→</span>
+        <span class="step">Health / rollback</span>
+      </div>
+      <ol>
+        <li><b>Proposal.</b> Hermes создаёт Brain Version DRAFT с причиной, источником, target agent, base version и risk. Он не редактирует ACTIVE version на месте.</li>
+        <li><b>Candidate.</b> Назначенный технический владелец создаёт immutable candidate в control-repo, diff и SHA-256; Notion status = PROPOSED/EVALUATING.</li>
+        <li><b>Evaluation.</b> Минимальный regression/eval pack проверяет ожидаемое поведение, запреты, tools/permissions и known failure cases.</li>
+        <li><b>Request.</b> Hermes формирует краткую approval card: что меняется, зачем, риск, eval, diff, текущая/новая version, rollback target и exact hash.</li>
+        <li><b>Decision.</b> Только allowlisted Андрей инициирует APPROVE/REJECT: основной канал — signed Telegram callback; дополнительный — контролируемая action-ссылка/кнопка в карточке Notion, открывающая Hermes Approval UI/endpoint. Оба пути создают <code>ApprovalCommand</code>. Ручное изменение свойства <code>Status</code> и свободное сообщение «ок» не считаются approval.</li>
+        <li><b>ApprovalCommand validation.</b> Проверить <code>approval_id</code>, authenticated actor allowlist, decision, channel, issued_at, TTL, single-use token ID, target/version, commit SHA, byte length, <code>AIOS-HASH-V1</code> и exact artifact hash.</li>
+        <li><b>Status mutation.</b> Только State Adapter под entity lease меняет PENDING → APPROVED/REJECTED и создаёт ApprovalEvent + audit. Прямая UI-правка protected field получает <code>UNAUTHORIZED_PROTECTED_EDIT</code>, откатывается к последнему COMMITTED status через Adapter и уведомляет Андрея.</li>
+        <li><b>Pre-activation gate.</b> Проверить status APPROVED, actor, expiry, single-use token, exact target/version/commit/length/hash profile/hash, audit COMMITTED и unchanged candidate.</li>
+        <li><b>Activation.</b> Контролируемый config release меняет active pointer в Agent Manifest; создаёт commit/activation event. Hermes не переписывает содержимое artifact.</li>
+        <li><b>Post-check.</b> Smoke/eval + heartbeat. При failure status ACTIVATION_FAILED и автоматический rollback только на заранее утверждённый known-good hash; событие фиксируется.</li>
+      </ol>
+
+      <h3>ApprovalCommand v1</h3>
+      <pre>approval_command_id · approval_id · decision(APPROVE|REJECT)
+actor_ref · authenticated_actor_id · channel(TELEGRAM|NOTION_ACTION)
+issued_at · token_id · idempotency_key · comment?
+target_type · target_id · target_version · artifact_commit_sha
+artifact_byte_length · artifact_hash_profile · artifact_sha256
+auth_context_hash · correlation_id</pre>
+      <p>Notion action URL содержит короткоживущий single-use token и требует активную owner session либо подтверждение через allowlisted Telegram ID. Наличие ссылки без подтверждённого actor не даёт права изменить Approval.</p>
+
+      <h3>Version rules</h3>
+      <div class="table-wrap"><table><thead><tr><th>Изменение</th><th>SemVer</th><th>Approval</th><th>Пример</th></tr></thead><tbody>
+        <tr><td>Роль, полномочия, запрещённые действия, output contract</td><td>MAJOR</td><td>Всегда Андрей</td><td><code>2.4.1 → 3.0.0</code></td></tr>
+        <tr><td>Новый workflow/tool/существенная инструкция</td><td>MINOR</td><td>Всегда Андрей перед activation</td><td><code>2.4.1 → 2.5.0</code></td></tr>
+        <tr><td>Уточнение текста без заявленного изменения поведения</td><td>PATCH</td><td>Тоже требуется для active brain; eval может быть сокращён</td><td><code>2.4.1 → 2.4.2</code></td></tr>
+        <tr><td>Emergency rollback</td><td>Возврат exact prior version</td><td>Предварительно разрешённый rollback target либо новое approval</td><td><code>2.5.0 → 2.4.1</code></td></tr>
+      </tbody></table></div>
+      <p class="danger"><b>Hash-binding:</b> если candidate, commit SHA, byte length или canonicalization profile изменились после approval, approval автоматически становится STALE/CANCELLED. Нужен новый diff и новое утверждение.</p>
+    </div>
+  </details>
+
+  <details id="briefing" open>
+    <summary>13. Ежедневный 10–15-минутный briefing pipeline</summary>
+    <div class="body">
+      <h3>Eligibility и подготовка</h3>
+      <ol>
+        <li>Hermes scheduler выбирает Projects со Status ACTIVE/OPERATING и <code>Briefing Enabled = true</code>.</li>
+        <li>Для каждого проекта использует его IANA timezone и Briefing Window; глобальная timezone не предполагается.</li>
+        <li>Создаёт BRF-ID и фиксирует input state snapshot/hash.</li>
+        <li>Собирает изменения после предыдущего briefing: completed ResultEnvelope/evidence, status changes, blockers, health, unanswered questions, pending approvals, next 24h.</li>
+        <li>Проверяет source/audit integrity. Элемент без evidence помечается, а не выдаётся как завершённый факт.</li>
+        <li>Доставляет в Telegram кнопку «Начать briefing» и компактную повестку.</li>
+      </ol>
+
+      <h3>Регламент 10–15 минут</h3>
+      <div class="table-wrap"><table><thead><tr><th>Время</th><th>Блок</th><th>Результат</th></tr></thead><tbody>
+        <tr><td>0–2 мин</td><td>Цель и health проекта</td><td>Подтверждён общий статус.</td></tr>
+        <tr><td>2–5 мин</td><td>Что завершено / изменилось</td><td>Evidence-backed progress без пересказа всех задач.</td></tr>
+        <tr><td>5–9 мин</td><td>Блокеры, риски, отклонения</td><td>Назначенные действия или вопросы.</td></tr>
+        <tr><td>9–12 мин</td><td>Решения Андрея и approvals</td><td>Только явные решения с source anchors.</td></tr>
+        <tr><td>12–15 мин</td><td>Следующие 24 часа</td><td>1–3 главных действия, владельцы, критерии.</td></tr>
+      </tbody></table></div>
+
+      <h3>После briefing</h3>
+      <ol>
+        <li>Запись/переписка сохраняется как raw SourceEvent.</li>
+        <li>БОТ-расшифровщик создаёт OperationalPackage, используя BRF-ID и project_id.</li>
+        <li>Hermes reconciles package с input snapshot и текущим state; возникшие за время разговора конфликты помечаются.</li>
+        <li>State Adapter создаёт draft tasks/questions/decisions и ChangeEvents.</li>
+        <li>Hermes отправляет Андрею close-out: принятые решения, созданные задачи, вопросы, что требует approval, следующий briefing.</li>
+        <li>Briefing status = CLOSED только после raw source, package, mapping result и audit COMMITTED.</li>
+      </ol>
+      <p class="warning"><b>Если briefing пропущен:</b> status = SKIPPED, решений не создаётся, Hermes предлагает новое окно. Молчание или отсутствие Андрея не считается согласием.</p>
+    </div>
+  </details>
+
+  <details id="integration" open>
+    <summary>14. Точки интеграции и интерфейсы</summary>
+    <div class="body">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Связь</th><th>Интерфейс v1</th><th>Contract</th><th>Ограничение</th></tr></thead>
+        <tbody>
+          <tr><td>БОТ-расшифровщик → Raw Writer</td><td>Internal HTTPS/MCP tool</td><td><code>source.create</code>, idempotency key, bytes manifest</td><td>Raw write должен завершиться до extraction delivery.</td></tr>
+          <tr><td>БОТ-расшифровщик → Hermes</td><td>Signed webhook / queue event</td><td><code>operational_package.ready</code></td><td>Hermes проверяет hash/schema; payload содержит URI, не весь media.</td></tr>
+          <tr><td>Hermes → Notion State Adapter</td><td>Internal authenticated API</td><td><code>state.read/upsert/transition/request_approval</code></td><td>Hermes отправляет StateCommand; Adapter применяет single-writer lease, version check и audit.</td></tr>
+          <tr><td>State Adapter ↔ Durable Store</td><td>Local SQLite transaction</td><td>commands/outbox/inbox/idempotency/leases/checkpoints</td><td>WAL + FULL sync; store доступен только Adapter/recovery worker на одном Hermes Base host.</td></tr>
+          <tr><td>Notion → Audit Reconciler</td><td>Official webhooks + Notion API</td><td><code>page.properties_updated/content_updated</code></td><td>HMAC validation, fetch latest, shadow diff, event ordering.</td></tr>
+          <tr><td>Audit Writer → Obsidian</td><td>Restricted filesystem adapter + Git</td><td><code>audit.append</code>, <code>snapshot.write</code></td><td>Create-only paths; no secrets; hash + commit.</td></tr>
+          <tr><td>Hermes → Codex</td><td>Существующий Codex Runner adapter</td><td>TaskEnvelope + ContextManifest</td><td>Новый слой не создаёт второй Codex entrypoint.</td></tr>
+          <tr><td>Codex → Hermes</td><td>Existing callback</td><td>RunEvent + ResultEnvelope</td><td>Hermes проецирует validated result в Notion через Adapter.</td></tr>
+          <tr><td>Work/Codex/Hermes → Notion</td><td><code>notion_read</code> MCP profile</td><td>Только search/fetch relevant operational context</td><td>Write tools и write credential физически отсутствуют; proposal/StateCommand возвращается Hermes/Adapter.</td></tr>
+          <tr><td>State Adapter Write Dispatcher → Notion</td><td><code>notion_state_adapter</code> integration</td><td>Schema-bounded create/update/archive</td><td>Единственный credential holder и remote write dispatcher; target databases/properties ограничены allowlist.</td></tr>
+          <tr><td>Notion Approval action → State Adapter</td><td>Short-lived signed action URL + owner authentication</td><td>ApprovalCommand</td><td>Не обновляет Status напрямую; actor/hash/TTL/single-use проверяются до write.</td></tr>
+          <tr><td>Curator → RAG</td><td>Existing private MCP/API</td><td><code>knowledge.propose/review/publish</code></td><td>Только approved/verified content с source/version.</td></tr>
+          <tr><td>Hermes ↔ Telegram</td><td>Bot API/webhook</td><td>briefing cards, approvals, alerts</td><td>Allowlisted user IDs, single-use callbacks, Telegram не SoT.</td></tr>
+          <tr><td>n8n</td><td>Transport adapters</td><td>delivery/retry/format conversion</td><td>Не содержит approval/business state machine.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Минимальные internal endpoints/tools</h3>
+      <pre>POST /v1/sources
+POST /v1/operational-packages
+POST /v1/state/commands
+GET  /v1/state/entities/{entity_type}/{entity_id}
+POST /v1/audit/events
+POST /v1/approvals
+POST /v1/approvals/{approval_id}/commands
+POST /v1/brain-versions/{brain_id}/activate
+POST /v1/briefings/prepare
+POST /v1/notion/webhooks
+POST /v1/reconcile/notion
+POST /v1/replay
+GET  /v1/replay/{replay_id}
+GET  /v1/outbox/health
+GET  /v1/leases/{entity_type}/{entity_id}
+GET  /v1/integrity/report</pre>
+      <p>Каждый mutating call: auth, idempotency key, correlation_id, actor_ref, schema_version и structured error. API names можно адаптировать к Hermes Base после технического probe; semantics менять нельзя.</p>
+    </div>
+  </details>
+
+  <details id="reliability" open>
+    <summary>15. Надёжность, безопасность и отказоустойчивость</summary>
+    <div class="body">
+      <div class="table-wrap"><table><thead><tr><th>Сбой / риск</th><th>Обязательное поведение</th></tr></thead><tbody>
+        <tr><td>Повторная доставка source/package/webhook</td><td>Idempotency по event ID + content hash; вернуть существующий result, не создавать дубль.</td></tr>
+        <tr><td>Два StateCommand одновременно для одной entity</td><td>Один получает per-entity lease/fencing token; второй остаётся queued. Параллельный Notion write запрещён.</td></tr>
+        <tr><td>Worker умер с активной lease</td><td>После TTL recovery worker получает больший fencing token, сверяет external state/outbox и продолжает; stale worker отклоняется.</td></tr>
+        <tr><td>SQLite недоступен или integrity check failed</td><td>Fail closed: новые semantic writes/approvals остановлены; read и alert разрешены. Восстановить backup, затем выполнить recovery/replay/reconciliation.</td></tr>
+        <tr><td>Notion 429/5xx/timeout</td><td>Durable queue, exponential backoff, respect Retry-After; не объявлять write успешным.</td></tr>
+        <tr><td>Timeout после dispatch — неизвестно, применил ли Notion write</td><td>Command = OUTCOME_UNKNOWN; не повторять вслепую и не dispatch следующий write по entity. Fetch entity, сравнить Last Command ID/State Version/hash и только затем ACK, retry или UNRECONCILED.</td></tr>
+        <tr><td>Notion event пришёл не по порядку</td><td>Сортировать по timestamp, fetch latest, сравнить state_version/snapshot; ambiguity → UNRECONCILED.</td></tr>
+        <tr><td>Obsidian/Audit Writer недоступен</td><td>State = AUDIT_PENDING; privileged actions и следующие agent writes по entity блокируются; retry из outbox.</td></tr>
+        <tr><td>Не найден project</td><td>Package = NEEDS_PROJECT, quarantine; не создавать entities в случайном проекте.</td></tr>
+        <tr><td>Противоречия в разговоре</td><td>Создать contradiction/open question; не выбирать последнюю фразу автоматически.</td></tr>
+        <tr><td>Approval hash mismatch/expired/reused</td><td>Блокировать activation, создать security/audit event, запросить новое approval.</td></tr>
+        <tr><td>Approval Status изменён вручную в Notion</td><td>Не считать решением; создать UNAUTHORIZED_PROTECTED_EDIT, восстановить последний COMMITTED status через Adapter и отправить корректную action-ссылку.</td></tr>
+        <tr><td>Activation failed</td><td>Пометить ACTIVATION_FAILED; rollback exact known-good version по policy; сообщить Андрею.</td></tr>
+        <tr><td>Notion page удалена/схема изменена</td><td>Webhook → audit + incident; агенты не восстанавливают/перестраивают schema молча.</td></tr>
+        <tr><td>Raw hash mismatch</td><td>QUARANTINED, CRITICAL incident; derived packages не использовать.</td></tr>
+      </tbody></table></div>
+
+      <h3>Security requirements</h3>
+      <ul>
+        <li><code>notion_read</code> и <code>notion_state_adapter</code> используют разные credentials/service principals; read-profile технически не имеет create/update/archive capability;</li>
+        <li>если готовый Notion MCP не умеет гарантированно скрыть write tools/capability, он не подключается к агентам: перед ним ставится custom read-only MCP proxy, регистрирующий только search/fetch;</li>
+        <li>write-profile доступен только State Adapter, ограничен allowlist data sources/properties и не передаётся Hermes, Work, Codex, n8n или prompts;</li>
+        <li>startup/CI negative permission test обязан доказать, что <code>notion_read</code> получает access denied на semantic write; при появлении write tool production gate закрывается;</li>
+        <li>Notion webhook использует отдельный secret и обязательную signature validation;</li>
+        <li>Telegram approval — allowlist exact user ID Андрея, signed single-use callback, expiry;</li>
+        <li>tokens/API keys не хранятся в Notion, Obsidian, transcript или RAG; только secret manager/environment;</li>
+        <li>PII/sensitive sources получают sensitivity + retention class; RAG ingestion отключён по умолчанию;</li>
+        <li>Audit Writer и Transcriber не имеют production credentials;</li>
+        <li>Hermes не получает право hard delete; operational deletion заменяется archive + audit;</li>
+        <li>SQLite online backup не реже 15 минут и перед deploy; ежедневный backup Notion export/snapshots и Git push Vault; ежемесячный end-to-end restore test;</li>
+        <li>schema changes Notion разрешены только через отдельную migration Task и ACP/Decision при изменении semantics.</li>
+      </ul>
+
+      <h3>Deterministic Recovery / Replay Contract</h3>
+      <p>Replay восстанавливает semantic operational state и его Notion projection; он не пытается восстановить рассуждения или историю чата Hermes.</p>
+      <div class="flow">
+        <span class="step">Approved schema snapshot</span><span class="arrow">→</span>
+        <span class="step">Latest trusted checkpoint</span><span class="arrow">→</span>
+        <span class="step">Ordered ChangeEvents</span><span class="arrow">→</span>
+        <span class="step">Hash/version integrity</span><span class="arrow">→</span>
+        <span class="step">control-repo reconcile</span><span class="arrow">→</span>
+        <span class="step">Rebuild Notion projections</span>
+      </div>
+      <ol>
+        <li><b>Freeze scope.</b> Перевести восстанавливаемый project/entity set в maintenance mode и получить replay/entity leases; новые semantic writes для scope ставятся в очередь.</li>
+        <li><b>Load schema.</b> Загрузить approved schema/contract version из control-repo и проверить immutable schema snapshot/hash в Obsidian.</li>
+        <li><b>Select checkpoint.</b> Для каждой entity взять последний trusted checkpoint: <code>entity_key, schema_version, state_version, state_hash, last_change_id</code>. Trusted означает valid <code>AIOS-HASH-V1</code>, COMMITTED audit и непротиворечивую Git history.</li>
+        <li><b>Build event chain.</b> Выбрать последующие COMMITTED ChangeEvents. Канонический порядок внутри entity задаётся парой <code>state_version_before → state_version_after</code>, а <code>change_id</code> служит tie-breaker только после доказанной непрерывности. <code>occurred_at</code> используется для отображения и диагностики, но не определяет replay order.</li>
+        <li><b>Continuity gate.</b> Первый event обязан начинаться с checkpoint version/hash; каждый следующий — с version/hash предыдущего; нормальный переход увеличивает version ровно на 1. Gap, duplicate branch, два разных events с одним <code>state_version_before</code> или before-hash mismatch останавливают replay и создают integrity incident.</li>
+        <li><b>Apply.</b> Проверить schema, source refs и hashes; применить normalized old→new patch; пересчитать after hash по <code>AIOS-HASH-V1</code> и сравнить с event.</li>
+        <li><b>Reconcile executable state.</b> Для TaskEnvelope, Agent Manifest, brain/config/code сверить control-repo commit SHA и exact artifact hash. Несовпадение блокирует ACTIVE/DONE projection.</li>
+        <li><b>Rebuild projection.</b> State Adapter в <code>REPLAY_PROJECTION</code> mode под entity lease создаёт/обновляет Notion до reconstructed state. Idempotency key = <code>replay_id:entity_key:state_version</code>. Projection write не создаёт новый semantic ChangeEvent; создаётся отдельный system replay event.</li>
+        <li><b>Verify and unfreeze.</b> Сравнить reconstructed hash/state_version с Notion, control-repo и latest audit; сохранить integrity report/checkpoint; только затем снять maintenance mode.</li>
+      </ol>
+      <p class="warning"><b>Recovery after SQLite loss:</b> сначала восстановить последний валидный SQLite backup. Затем recovery worker сверяет незавершённые commands/outbox с Notion state, Obsidian ChangeEvents и idempotency keys. Изменение Notion без доказанного audit становится <code>UNRECONCILED</code>; replay не придумывает недостающий event.</p>
+    </div>
+  </details>
+
+  <details id="implementation" open>
+    <summary>16. План реализации, backlog и acceptance</summary>
+    <div class="body">
+      <h3>Инкременты</h3>
+      <div class="table-wrap"><table><thead><tr><th>Этап</th><th>Исполнитель по умолчанию</th><th>Артефакт / gate</th></tr></thead><tbody>
+        <tr><td><b>0. Architecture gate</b></td><td>Hermes Architect + Андрей</td><td>APPROVED/REJECTED ACP-001/002/003; заполнены deployment variables.</td></tr>
+        <tr><td><b>1. Foundation</b></td><td>Codex Implementer</td><td>Schemas, IDs, <code>AIOS-HASH-V1</code>, Notion data sources, physically separate permission profiles, SQLite WAL durable store, State Adapter skeleton и Vault structure.</td></tr>
+        <tr><td><b>2. Raw + Transcriber ingest</b></td><td>Codex Implementer + transcriber owner</td><td>SourceEvent/OperationalPackage, raw-first persistence, validation, dedupe.</td></tr>
+        <tr><td><b>3. Semantic state + audit</b></td><td>Codex Implementer</td><td>StateCommand, per-entity lease/fencing, exact old/new ChangeEvent, durable outbox, Obsidian writer, Notion projection.</td></tr>
+        <tr><td><b>4. Webhook reconciliation</b></td><td>Codex Implementer + QA</td><td>HMAC, authors, shadow snapshots, best-effort exact/UNRECONCILED contract, ordering, duplicate/retry tests.</td></tr>
+        <tr><td><b>5. Brain approval</b></td><td>Codex Implementer + Hermes integration</td><td>candidate/eval/ApprovalCommand, Telegram + controlled Notion action, hash gate, activation/rollback end-to-end.</td></tr>
+        <tr><td><b>6. Daily briefings</b></td><td>Hermes + Codex adapter</td><td>schedule, prebrief, Telegram session, transcript ingest, close-out.</td></tr>
+        <tr><td><b>7. RAG/Work integration</b></td><td>Integration specialist + Curator</td><td>read contexts, curated publish, source/version trace.</td></tr>
+        <tr><td><b>8. Recovery/replay</b></td><td>Codex Implementer + QA</td><td>Backup restore, deterministic per-entity ChangeEvent replay, projection rebuild, gap/branch/hash-failure tests.</td></tr>
+        <tr><td><b>9. Pilot</b></td><td>Полный role-pack</td><td>Один активный реальный проект, 7 ежедневных briefing, recovery drill, owner sign-off.</td></tr>
+      </tbody></table></div>
+
+      <h3>Обязательные acceptance scenarios</h3>
+      <ol>
+        <li>Один transcript создаёт raw source, package, draft task/decision/question и двусторонние source links.</li>
+        <li>Повтор того же transcript трижды не создаёт дубли.</li>
+        <li>Inferred decision остаётся NEEDS_REVIEW и не активирует действие.</li>
+        <li>State Adapter status change фиксирует exact old/new, initiator, reason, source и time в Notion Changes + Obsidian.</li>
+        <li>Два одновременных StateCommand для одной entity сериализуются; только один имеет действующий fencing token, а single Write Dispatcher не допускает параллельных remote writes; State Version увеличивается без lost update.</li>
+        <li>Worker со stale/expired fencing token не может завершить Notion write после takeover.</li>
+        <li>Прямая правка Андрея в Notion попадает в audit через webhook/shadow snapshot как доказанный exact final diff либо явно <code>UNRECONCILED</code>.</li>
+        <li>Несогласованные concurrent UI edits становятся UNRECONCILED и не запускают downstream action.</li>
+        <li>Brain candidate без approval не может стать ACTIVE.</li>
+        <li>Approval на hash A не активирует изменённый hash B.</li>
+        <li>Rejected/expired/reused approval не исполняется.</li>
+        <li>Ручное изменение Notion Approval Status не создаёт valid ApprovalEvent, откатывается и не активирует brain.</li>
+        <li>Контролируемая Notion action создаёт ApprovalCommand; без allowlisted actor/hash/TTL команда отклоняется.</li>
+        <li><code>notion_read</code> для Work/Codex/Hermes физически не может create/update/archive; write доступен только <code>notion_state_adapter</code>.</li>
+        <li>Одинаковые canonical JSON/text/semantic states на Windows/Linux дают одинаковый <code>AIOS-HASH-V1</code>; raw hash совпадает только для идентичных bytes.</li>
+        <li>Activation failure возвращает exact known-good version и оставляет полный audit.</li>
+        <li>Briefing по Active проекту готовится, проводится за 10–15 минут и заканчивается raw/package/state/audit/close-out.</li>
+        <li>Пропущенный briefing не создаёт решений от имени Андрея.</li>
+        <li>Notion 429/503, Obsidian outage и restart Hermes не теряют command/event; незавершённая state machine восстанавливается из SQLite outbox.</li>
+        <li>Сымитированный timeout после успешного Notion update переводит command в OUTCOME_UNKNOWN; reconciliation по Last Command ID/version/hash не создаёт повторную mutation.</li>
+        <li>После удаления Hermes runtime operational state восстанавливается по Replay Contract из schema/checkpoint/ChangeEvents/control-repo без истории его чата.</li>
+        <li>Replay использует state-version chain, а не timestamp; искусственный gap, branch или before-hash mismatch останавливает восстановление и создаёт incident.</li>
+        <li>RAG не возвращает raw hypothesis как approved fact.</li>
+      </ol>
+
+      <h3>Definition of Done слоя v1</h3>
+      <ul>
+        <li>все data sources созданы по schema и зафиксированы schema export/hash;</li>
+        <li>ACP status записан, baseline не изменён молча;</li>
+        <li>права <code>notion_read</code>/<code>notion_state_adapter</code> проверены негативными capability tests;</li>
+        <li>SQLite WAL, backup, restart recovery, per-entity lease и stale-token rejection подтверждены тестами;</li>
+        <li>hash test vectors для raw/text/JCS/semantic state зафиксированы в control-repo и проходят во всех используемых runtimes;</li>
+        <li>end-to-end source → package → state → audit работает на pilot;</li>
+        <li>brain approval gate невозможно обойти через Hermes, Notion MCP или прямой API;</li>
+        <li>7-дневный pilot не имеет потерянных semantic changes и orphan sources;</li>
+        <li>есть runbook: SQLite/Notion/Obsidian outage, reconciliation, rollback, deterministic replay/restore, schema migration;</li>
+        <li>Андрей получает одну понятную briefing/approval карточку, а не технические логи.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details id="open" open>
+    <summary>17. Параметры, которые нужно заполнить перед production deploy</summary>
+    <div class="body">
+      <p>Эти значения не нужно восстанавливать из переписки. Они оформляются как deployment checklist; отсутствие значения блокирует только соответствующий этап.</p>
+      <pre>NOTION_API_VERSION=2026-03-11
+NOTION_WORKSPACE_ID=NEED_OWNER_SETUP
+NOTION_ROOT_PAGE_ID=NEED_OWNER_SETUP
+NOTION_READ_INTEGRATION_ID=NEED_OWNER_SETUP
+NOTION_STATE_ADAPTER_INTEGRATION_ID=NEED_OWNER_SETUP
+ANDREY_NOTION_USER_ID=NEED_OWNER_SETUP
+ANDREY_TELEGRAM_USER_ID=NEED_OWNER_SETUP
+APPROVAL_ACTION_BASE_URL=NEED_OWNER_SETUP
+OBSIDIAN_VAULT_NAME=NEED_OWNER_SETUP
+OBSIDIAN_VAULT_ROOT=NEED_OWNER_SETUP
+AUDIT_GIT_REMOTE=NEED_OWNER_SETUP
+HERMES_STATE_DB_PATH=NEED_DEPLOY_SETUP
+SQLITE_BACKUP_TARGET=NEED_DEPLOY_SETUP
+SQLITE_BACKUP_INTERVAL_MINUTES=15
+SQLITE_MIN_VERSION=3.51.3
+ENTITY_LEASE_TTL_SECONDS=60
+DEFAULT_TIMEZONE=NEED_OWNER_DECISION
+DEFAULT_BRIEFING_WINDOW=NEED_OWNER_DECISION
+RAW_AUDIO_RETENTION_DAYS=NEED_OWNER_DECISION
+APPROVAL_TTL_MINUTES=NEED_OWNER_DECISION</pre>
+      <div class="table-wrap"><table><thead><tr><th>Решение</th><th>Рекомендация v1</th><th>Кто утверждает</th></tr></thead><tbody>
+        <tr><td>ACP-001/002/003</td><td>Утвердить пакетно до cutover.</td><td>Андрей</td></tr>
+        <tr><td>Approval channel</td><td>Primary Telegram signed buttons; secondary controlled Notion action → ApprovalCommand. Ручное изменение Approval Status не признаётся.</td><td>Андрей</td></tr>
+        <tr><td>Notion direct edit</td><td>Андрей может редактировать обычные operational fields; agents используют read-only profile; semantic API writes и все protected brain/approval fields — только State Adapter.</td><td>Андрей</td></tr>
+        <tr><td>Durable coordination store</td><td>SQLite WAL + FULL sync на одном Hermes Base host, off-host backup каждые 15 минут; multi-host только через отдельный ACP.</td><td>Hermes Architect + Андрей</td></tr>
+        <tr><td>Immutability level</td><td>v1 append-only + Git/hash. WORM отложить до реальной compliance-потребности.</td><td>Андрей</td></tr>
+        <tr><td>Briefing cadence</td><td>Каждый ACTIVE/OPERATING проект ежедневно; индивидуальное окно и timezone в Projects.</td><td>Андрей</td></tr>
+        <tr><td>Raw media retention</td><td>Transcript/audit — постоянно; тяжёлое audio/video — срок задаётся отдельно по sensitivity/cost.</td><td>Андрей</td></tr>
+      </tbody></table></div>
+      <p class="callout"><b>Перевод статуса:</b> после заполнения deployment variables, успешного прохождения новых acceptance tests и явного решения Андрея по <code>ACP-001/002/003</code> версия 1.1 может быть переведена из <code>DRAFT</code> в <code>APPROVED FOR IMPLEMENTATION</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>18. Основания и технические источники</summary>
+    <div class="body sources">
+      <p><b>Архитектурный baseline:</b> <code>AI_OS_Interaction_Architecture_v1.html</code>, SHA-256 указан в разделе 1. Новое ТЗ не перезаписывает baseline.</p>
+      <ul>
+        <li><a href="https://developers.notion.com/reference/data-source">Notion Data source</a> — data sources и properties; разделение database/data source введено API version 2025-09-03.</li>
+        <li><a href="https://developers.notion.com/reference/patch-page">Notion Update page</a> — обновление properties, capabilities и актуальный <code>Notion-Version: 2026-03-11</code>.</li>
+        <li><a href="https://developers.notion.com/reference/webhooks">Notion Webhooks</a> — HTTPS endpoint, verification и HMAC-SHA256 signature.</li>
+        <li><a href="https://developers.notion.com/reference/webhooks-events-delivery">Notion Event types &amp; delivery</a> — aggregation, ordering, retries, authors и отсутствие полного changed content в webhook.</li>
+        <li><a href="https://developers.notion.com/reference/webhooks/page-properties-updated">Notion page.properties_updated</a> — entity, authors и updated_properties.</li>
+        <li><a href="https://developers.notion.com/reference/request-limits">Notion Request limits</a> — средний лимит 3 request/sec, 429 и Retry-After, size constraints.</li>
+        <li><a href="https://help.obsidian.md/Extending%2BObsidian/Obsidian%2BURI">Obsidian URI</a> — ссылки на vault/file/heading/block.</li>
+        <li><a href="https://help.obsidian.md/Obsidian%2BSync/Version%2Bhistory">Obsidian Sync Version history</a> — дополнительная version history с ограниченным retention; поэтому audit опирается на Git/hash.</li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc8785">RFC 8785: JSON Canonicalization Scheme</a> — нормативная canonical JSON serialization для <code>AIOS-HASH-V1</code>.</li>
+        <li><a href="https://www.sqlite.org/wal.html">SQLite Write-Ahead Logging</a> — WAL, same-host constraint, single DB writer, checkpointing, FULL sync и требование patched SQLite 3.51.3+.</li>
+        <li><a href="https://www.sqlite.org/backup.html">SQLite Online Backup API</a> — согласованный snapshot работающей database без простого копирования live DB-файла.</li>
+        <li><a href="https://www.sqlite.org/pragma.html#pragma_synchronous">SQLite PRAGMA synchronous</a> — durability settings, проверяемые при startup.</li>
+      </ul>
+      <p>Факты из текущего запроса, использованные как требования: БОТ-расшифровщик; ежедневные 10–15-минутные briefing; Hermes как системный оркестратор; указанные Notion entities; approval Андрея для brain/prompt; Obsidian raw/audit; old/new semantic change log; совместимость с Hermes/Codex/RAG/Work.</p>
+    </div>
+  </details>
+
+  <p class="foot">Итоговый контракт слоя: <b>source first → structured proposal → Hermes policy → audited state mutation → explicit approval where required → exact version activation → recoverable audit trail.</b></p>
+</main>
+</body>
+</html>
