@@ -1,0 +1,1699 @@
+{
+  "schema_version": "1.1-section-9",
+  "notion_version": "2026-03-11",
+  "databases": [
+    {
+      "key": "projects",
+      "name": "Projects",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Project ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Duplicates Entity ID with PRJ prefix."
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "INBOX",
+            "DISCOVERY",
+            "READY",
+            "ACTIVE",
+            "ON_HOLD",
+            "OPERATING",
+            "ARCHIVED"
+          ]
+        },
+        "Lifecycle Stage": {
+          "type": "select",
+          "options": [
+            "build",
+            "launch",
+            "operate",
+            "evolve"
+          ]
+        },
+        "Health": {
+          "type": "select",
+          "options": [
+            "GREEN",
+            "AMBER",
+            "RED",
+            "UNKNOWN"
+          ]
+        },
+        "Goal": {
+          "type": "rich_text"
+        },
+        "Priority": {
+          "type": "select",
+          "options": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "Owner": {
+          "type": "people"
+        },
+        "Tasks": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Decisions": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Open Questions": {
+          "type": "relation",
+          "target": "open_questions"
+        },
+        "Agents": {
+          "type": "relation",
+          "target": "agents"
+        },
+        "Briefings": {
+          "type": "relation",
+          "target": "briefings",
+          "rule": "Reverse navigation required by acceptance criteria."
+        },
+        "Repo URL": {
+          "type": "url"
+        },
+        "Obsidian Index URI": {
+          "type": "url"
+        },
+        "Briefing Enabled": {
+          "type": "checkbox"
+        },
+        "Briefing Window": {
+          "type": "rich_text"
+        },
+        "Last Briefing": {
+          "type": "date"
+        },
+        "Next Briefing": {
+          "type": "date"
+        }
+      },
+      "views": [
+        "Active Projects",
+        "All Projects",
+        "On Hold",
+        "Operating"
+      ]
+    },
+    {
+      "key": "tasks",
+      "name": "Tasks / Backlog",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Task ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Project": {
+          "type": "relation",
+          "target": "projects",
+          "required": true
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "INBOX",
+            "DRAFT",
+            "READY",
+            "IN_PROGRESS",
+            "BLOCKED",
+            "QA",
+            "AWAITING_APPROVAL",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "Type": {
+          "type": "select",
+          "options": [
+            "feature",
+            "bug",
+            "ops",
+            "research",
+            "documentation",
+            "agent_change",
+            "briefing_followup"
+          ]
+        },
+        "Lifecycle Stage": {
+          "type": "select",
+          "options": [
+            "build",
+            "launch",
+            "operate",
+            "evolve"
+          ]
+        },
+        "Priority": {
+          "type": "select",
+          "options": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "Risk": {
+          "type": "select",
+          "options": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "Assigned Agent": {
+          "type": "relation",
+          "target": "agents"
+        },
+        "Code Owner": {
+          "type": "relation",
+          "target": "agents"
+        },
+        "Parent Task": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Depends On": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Acceptance Summary": {
+          "type": "rich_text"
+        },
+        "Approval Policy": {
+          "type": "select",
+          "options": [
+            "NONE",
+            "OWNER_BEFORE_RUN",
+            "OWNER_BEFORE_RELEASE",
+            "OWNER_FOR_ACTION"
+          ]
+        },
+        "Deadline": {
+          "type": "date"
+        },
+        "Next Action": {
+          "type": "rich_text"
+        },
+        "Base Revision": {
+          "type": "rich_text"
+        },
+        "Latest Run ID": {
+          "type": "rich_text"
+        },
+        "Verified SHA": {
+          "type": "rich_text"
+        },
+        "PR / Result URI": {
+          "type": "url"
+        },
+        "Decision": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Briefing": {
+          "type": "relation",
+          "target": "briefings"
+        }
+      },
+      "views": [
+        "Inbox",
+        "Backlog",
+        "Ready",
+        "In Progress",
+        "Blocked",
+        "Awaiting Approval",
+        "Done",
+        "By Project"
+      ]
+    },
+    {
+      "key": "decisions",
+      "name": "Decisions",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Decision ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Project": {
+          "type": "relation",
+          "target": "projects"
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "PROPOSED",
+            "NEEDS_REVIEW",
+            "AWAITING_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "SUPERSEDED"
+          ]
+        },
+        "Type": {
+          "type": "select",
+          "options": [
+            "architecture",
+            "product",
+            "operational",
+            "process",
+            "agent_brain",
+            "risk"
+          ]
+        },
+        "Statement": {
+          "type": "rich_text"
+        },
+        "Options Summary": {
+          "type": "rich_text"
+        },
+        "Rationale": {
+          "type": "rich_text"
+        },
+        "Decision Owner": {
+          "type": "people"
+        },
+        "Approved By": {
+          "type": "people"
+        },
+        "Decided At": {
+          "type": "date"
+        },
+        "Approval": {
+          "type": "relation",
+          "target": "approvals"
+        },
+        "Supersedes": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Resulting Tasks": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "ACP ID": {
+          "type": "rich_text"
+        },
+        "Operating Manual": {
+          "type": "relation",
+          "target": "operating_manual",
+          "rule": "Reverse traceability for manual changes."
+        },
+        "Briefings": {
+          "type": "relation",
+          "target": "briefings"
+        }
+      },
+      "views": [
+        "Needs Review",
+        "Awaiting Approval",
+        "Approved",
+        "Superseded",
+        "By Project"
+      ]
+    },
+    {
+      "key": "open_questions",
+      "name": "Open Questions",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Question ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Project": {
+          "type": "relation",
+          "target": "projects"
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "OPEN",
+            "NEEDS_ANDREY",
+            "RESEARCHING",
+            "ANSWERED",
+            "DROPPED"
+          ]
+        },
+        "Impact": {
+          "type": "select",
+          "options": [
+            "BLOCKING",
+            "HIGH",
+            "NORMAL",
+            "LOW"
+          ]
+        },
+        "Owner": {
+          "type": "people"
+        },
+        "Asked By": {
+          "type": "rich_text"
+        },
+        "Due": {
+          "type": "date"
+        },
+        "Answer Summary": {
+          "type": "rich_text"
+        },
+        "Blocking Tasks": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Answer Decision": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Briefings": {
+          "type": "relation",
+          "target": "briefings"
+        }
+      },
+      "views": [
+        "Open",
+        "Needs Андрей",
+        "Blocking",
+        "By Project"
+      ]
+    },
+    {
+      "key": "agents",
+      "name": "Agents",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Agent ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "PROPOSED",
+            "ACTIVE",
+            "PAUSED",
+            "DEGRADED",
+            "RETIRED"
+          ]
+        },
+        "Role": {
+          "type": "select",
+          "options": []
+        },
+        "Runtime": {
+          "type": "select",
+          "options": [
+            "HERMES",
+            "CODEX",
+            "WORK",
+            "ANTIGRAVITY",
+            "EXTERNAL"
+          ]
+        },
+        "Scope": {
+          "type": "rich_text"
+        },
+        "Prohibited Actions": {
+          "type": "rich_text"
+        },
+        "Permission Profile": {
+          "type": "select",
+          "options": [
+            "READ_ONLY",
+            "PROPOSE",
+            "STATE_WRITE",
+            "CODE_WRITE",
+            "CONTROLLED_RELEASE"
+          ]
+        },
+        "Projects": {
+          "type": "relation",
+          "target": "projects"
+        },
+        "Active Brain Version": {
+          "type": "relation",
+          "target": "brain_versions"
+        },
+        "Brain Versions": {
+          "type": "relation",
+          "target": "brain_versions"
+        },
+        "Agent Manifest URI": {
+          "type": "url"
+        },
+        "Last Run": {
+          "type": "date"
+        },
+        "Last Heartbeat": {
+          "type": "date"
+        }
+      },
+      "views": [
+        "Active",
+        "Proposed",
+        "Paused",
+        "By Project"
+      ]
+    },
+    {
+      "key": "brain_versions",
+      "name": "Agent Brain / Prompt Versions",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Brain Version ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Agent": {
+          "type": "relation",
+          "target": "agents",
+          "required": true
+        },
+        "Version": {
+          "type": "rich_text"
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "DRAFT",
+            "PROPOSED",
+            "EVALUATING",
+            "AWAITING_APPROVAL",
+            "APPROVED",
+            "ACTIVE",
+            "REJECTED",
+            "SUPERSEDED",
+            "ROLLED_BACK",
+            "ACTIVATION_FAILED"
+          ]
+        },
+        "Change Type": {
+          "type": "multi_select",
+          "options": [
+            "prompt",
+            "tools",
+            "permissions",
+            "memory_policy",
+            "model",
+            "full"
+          ]
+        },
+        "Summary": {
+          "type": "rich_text"
+        },
+        "Reason": {
+          "type": "rich_text"
+        },
+        "Risk": {
+          "type": "select",
+          "options": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "Base Version": {
+          "type": "relation",
+          "target": "brain_versions"
+        },
+        "Rollback Target": {
+          "type": "relation",
+          "target": "brain_versions"
+        },
+        "Artifact URI": {
+          "type": "url"
+        },
+        "Diff URI": {
+          "type": "url"
+        },
+        "Artifact SHA-256": {
+          "type": "rich_text"
+        },
+        "Hash Profile": {
+          "type": "rich_text"
+        },
+        "Artifact Commit SHA": {
+          "type": "rich_text"
+        },
+        "Byte Length": {
+          "type": "number"
+        },
+        "Evaluation Result": {
+          "type": "rich_text"
+        },
+        "Approval": {
+          "type": "relation",
+          "target": "approvals"
+        },
+        "Activated At": {
+          "type": "date"
+        },
+        "Activated By": {
+          "type": "rich_text"
+        }
+      },
+      "views": [
+        "Draft / Proposed",
+        "Evaluating",
+        "Awaiting Approval",
+        "Active",
+        "Version History",
+        "By Agent"
+      ]
+    },
+    {
+      "key": "operating_manual",
+      "name": "Operating Manual",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Manual ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Topic": {
+          "type": "rich_text",
+          "rule": "TZ requests title; represented as rich_text because Notion permits only one title and common Name is mandatory."
+        },
+        "Scope": {
+          "type": "select",
+          "options": [
+            "GLOBAL",
+            "PROJECT",
+            "PRODUCT",
+            "AGENT"
+          ]
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "DRAFT",
+            "REVIEW",
+            "APPROVED",
+            "ACTIVE",
+            "SUPERSEDED"
+          ]
+        },
+        "Version": {
+          "type": "rich_text"
+        },
+        "Projects": {
+          "type": "relation",
+          "target": "projects"
+        },
+        "Agents": {
+          "type": "relation",
+          "target": "agents"
+        },
+        "Effective From": {
+          "type": "date"
+        },
+        "Supersedes": {
+          "type": "relation",
+          "target": "operating_manual"
+        },
+        "Decision": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Approval": {
+          "type": "relation",
+          "target": "approvals"
+        },
+        "Snapshot URI": {
+          "type": "url"
+        },
+        "Content Hash": {
+          "type": "rich_text"
+        }
+      },
+      "views": [
+        "Active",
+        "Draft / Review",
+        "By Scope",
+        "By Project",
+        "By Agent"
+      ]
+    },
+    {
+      "key": "changes",
+      "name": "Changes",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Change ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Entity Type": {
+          "type": "select",
+          "options": [
+            "PROJECT",
+            "TASK",
+            "DECISION",
+            "OPEN_QUESTION",
+            "AGENT",
+            "BRAIN_VERSION",
+            "OPERATING_MANUAL",
+            "CHANGE",
+            "SOURCE_EVENT",
+            "APPROVAL",
+            "BRIEFING"
+          ]
+        },
+        "Operation": {
+          "type": "select",
+          "options": [
+            "CREATE",
+            "UPDATE",
+            "STATUS_TRANSITION",
+            "RELATION",
+            "ARCHIVE",
+            "SCHEMA_CHANGE"
+          ]
+        },
+        "Changed Fields": {
+          "type": "multi_select",
+          "options": []
+        },
+        "Old Value Summary": {
+          "type": "rich_text"
+        },
+        "New Value Summary": {
+          "type": "rich_text"
+        },
+        "Initiator": {
+          "type": "rich_text"
+        },
+        "Initiator Type": {
+          "type": "select",
+          "options": [
+            "person",
+            "bot",
+            "agent",
+            "integration"
+          ]
+        },
+        "Reason": {
+          "type": "rich_text"
+        },
+        "Decision": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Occurred At": {
+          "type": "date"
+        },
+        "Correlation ID": {
+          "type": "rich_text"
+        },
+        "Before Hash": {
+          "type": "rich_text"
+        },
+        "After Hash": {
+          "type": "rich_text"
+        },
+        "Hash Profile": {
+          "type": "rich_text"
+        },
+        "Audit Path": {
+          "type": "rich_text"
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "FAILED"
+          ]
+        },
+        "Notion Event ID": {
+          "type": "rich_text"
+        }
+      },
+      "views": [
+        "Recent Changes",
+        "Unreconciled",
+        "Audit Pending",
+        "By Entity"
+      ]
+    },
+    {
+      "key": "source_events",
+      "name": "Source Events",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Source ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Type": {
+          "type": "select",
+          "options": [
+            "RAW_TRANSCRIPT",
+            "OPERATIONAL_PACKAGE",
+            "BRIEFING",
+            "APPROVAL",
+            "RUN_RESULT",
+            "NOTION_WEBHOOK",
+            "EXTERNAL"
+          ]
+        },
+        "Source System": {
+          "type": "select",
+          "options": [
+            "TELEGRAM",
+            "WORK",
+            "BOT_TRANSCRIBER",
+            "NOTION",
+            "GITHUB",
+            "RAG",
+            "OBSIDIAN"
+          ]
+        },
+        "Projects": {
+          "type": "relation",
+          "target": "projects"
+        },
+        "Parent Source": {
+          "type": "relation",
+          "target": "source_events"
+        },
+        "Occurred At": {
+          "type": "date"
+        },
+        "Actor Refs": {
+          "type": "rich_text"
+        },
+        "Raw Path": {
+          "type": "rich_text"
+        },
+        "Obsidian URI": {
+          "type": "url"
+        },
+        "Content SHA-256": {
+          "type": "rich_text"
+        },
+        "Hash Profile": {
+          "type": "rich_text"
+        },
+        "Correlation ID": {
+          "type": "rich_text"
+        },
+        "Normalized Content SHA-256": {
+          "type": "rich_text"
+        },
+        "Processing Status": {
+          "type": "status",
+          "options": [
+            "RECEIVED",
+            "VERIFIED",
+            "EXTRACTED",
+            "INGESTED",
+            "QUARANTINED",
+            "FAILED"
+          ]
+        },
+        "Confidence": {
+          "type": "number"
+        },
+        "Sensitivity": {
+          "type": "select",
+          "options": []
+        },
+        "Related Tasks": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Related Decisions": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Related Questions": {
+          "type": "relation",
+          "target": "open_questions"
+        },
+        "Related Changes": {
+          "type": "relation",
+          "target": "changes"
+        }
+      },
+      "views": [
+        "Recent Sources",
+        "Raw Transcripts",
+        "Operational Packages",
+        "By Project",
+        "Failed / Quarantined"
+      ]
+    },
+    {
+      "key": "approvals",
+      "name": "Approvals",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Approval ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Type": {
+          "type": "select",
+          "options": [
+            "BRAIN_ACTIVATION",
+            "ACP",
+            "MANUAL",
+            "RISKY_ACTION",
+            "RELEASE",
+            "ROLLBACK"
+          ]
+        },
+        "Target Type": {
+          "type": "rich_text"
+        },
+        "Target ID": {
+          "type": "rich_text"
+        },
+        "Target Version": {
+          "type": "rich_text"
+        },
+        "Artifact SHA-256": {
+          "type": "rich_text"
+        },
+        "Hash Profile": {
+          "type": "rich_text"
+        },
+        "Artifact Commit SHA": {
+          "type": "rich_text"
+        },
+        "Byte Length": {
+          "type": "number"
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "EXPIRED",
+            "CANCELLED",
+            "CONSUMED"
+          ]
+        },
+        "Requested By": {
+          "type": "rich_text"
+        },
+        "Requested At": {
+          "type": "date"
+        },
+        "Decided By": {
+          "type": "rich_text"
+        },
+        "Decided At": {
+          "type": "date"
+        },
+        "Channel": {
+          "type": "select",
+          "options": [
+            "TELEGRAM",
+            "NOTION_ACTION"
+          ]
+        },
+        "Single-use Token ID": {
+          "type": "rich_text"
+        },
+        "Approve Action URL": {
+          "type": "url"
+        },
+        "Reject Action URL": {
+          "type": "url"
+        },
+        "Source Event": {
+          "type": "relation",
+          "target": "source_events"
+        },
+        "Decision": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Expires At": {
+          "type": "date"
+        },
+        "Activation Event ID": {
+          "type": "rich_text"
+        }
+      },
+      "views": [
+        "Pending",
+        "Approved",
+        "Rejected / Expired",
+        "By Type"
+      ]
+    },
+    {
+      "key": "briefings",
+      "name": "Briefings",
+      "properties": {
+        "Name": {
+          "type": "title",
+          "required": true,
+          "rule": "Human-readable; never an ID."
+        },
+        "Entity ID": {
+          "type": "rich_text",
+          "required": true,
+          "rule": "Stable external ID; immutable after create."
+        },
+        "State Version": {
+          "type": "number",
+          "required": true,
+          "rule": "Increment exactly +1 per committed semantic mutation."
+        },
+        "Source Events": {
+          "type": "relation",
+          "target": "source_events",
+          "rule": "Required for semantic entities; migration exception must be marked."
+        },
+        "Last Change": {
+          "type": "relation",
+          "target": "changes",
+          "rule": "Required after first update."
+        },
+        "Last Command ID": {
+          "type": "rich_text",
+          "rule": "Required after first adapter write; adapter-only idempotency marker."
+        },
+        "Audit Status": {
+          "type": "status",
+          "options": [
+            "COMMITTED",
+            "AUDIT_PENDING",
+            "UNRECONCILED",
+            "ERROR"
+          ],
+          "required": true
+        },
+        "Created": {
+          "type": "created_time",
+          "required": true
+        },
+        "Created By": {
+          "type": "created_by",
+          "required": true
+        },
+        "Last Edited": {
+          "type": "last_edited_time",
+          "required": true
+        },
+        "Last Edited By": {
+          "type": "last_edited_by",
+          "required": true
+        },
+        "Briefing ID": {
+          "type": "rich_text",
+          "required": true
+        },
+        "Project": {
+          "type": "relation",
+          "target": "projects",
+          "required": true
+        },
+        "Status": {
+          "type": "status",
+          "options": [
+            "SCHEDULED",
+            "PREPARED",
+            "IN_PROGRESS",
+            "PROCESSING",
+            "CLOSED",
+            "SKIPPED",
+            "FAILED"
+          ]
+        },
+        "Scheduled At": {
+          "type": "date"
+        },
+        "Started At": {
+          "type": "date"
+        },
+        "Ended At": {
+          "type": "date"
+        },
+        "Input Snapshot Hash": {
+          "type": "rich_text"
+        },
+        "Raw Source": {
+          "type": "relation",
+          "target": "source_events"
+        },
+        "Operational Package": {
+          "type": "relation",
+          "target": "source_events"
+        },
+        "Decisions": {
+          "type": "relation",
+          "target": "decisions"
+        },
+        "Tasks": {
+          "type": "relation",
+          "target": "tasks"
+        },
+        "Questions": {
+          "type": "relation",
+          "target": "open_questions"
+        },
+        "Summary": {
+          "type": "rich_text"
+        },
+        "Next Briefing": {
+          "type": "date"
+        },
+        "Missing Data": {
+          "type": "rich_text"
+        }
+      },
+      "views": [
+        "Today",
+        "Scheduled",
+        "Processing",
+        "Closed",
+        "Failed / Skipped",
+        "By Project"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "database": "Projects",
+      "name": "New Project",
+      "body": [
+        "Goal and scope",
+        "Success criteria",
+        "Constraints",
+        "Current context"
+      ]
+    },
+    {
+      "database": "Tasks / Backlog",
+      "name": "New Task",
+      "body": [
+        "Context",
+        "Acceptance criteria",
+        "Evidence / result"
+      ]
+    },
+    {
+      "database": "Decisions",
+      "name": "Decision record",
+      "body": [
+        "Context",
+        "Options and consequences",
+        "Rationale"
+      ]
+    },
+    {
+      "database": "Open Questions",
+      "name": "Open question",
+      "body": [
+        "Context",
+        "Research notes",
+        "Sources"
+      ]
+    },
+    {
+      "database": "Agent Brain / Prompt Versions",
+      "name": "Brain version proposal",
+      "body": [
+        "Change detail",
+        "Evaluation",
+        "Rollback plan"
+      ]
+    },
+    {
+      "database": "Operating Manual",
+      "name": "Manual entry",
+      "body": [
+        "Policy / procedure",
+        "Exceptions",
+        "Change history"
+      ]
+    },
+    {
+      "database": "Briefings",
+      "name": "Briefing session",
+      "body": [
+        "Agenda",
+        "Notes",
+        "Close-out"
+      ]
+    }
+  ]
+}
