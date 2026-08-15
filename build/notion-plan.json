@@ -1,0 +1,2294 @@
+{
+  "notion_version": "2026-03-11",
+  "dry_run": true,
+  "phase_1_create_databases_and_data_sources": [
+    {
+      "database_key": "projects",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Projects"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Project ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "INBOX"
+                    },
+                    {
+                      "name": "DISCOVERY"
+                    },
+                    {
+                      "name": "READY"
+                    },
+                    {
+                      "name": "ACTIVE"
+                    },
+                    {
+                      "name": "ON_HOLD"
+                    },
+                    {
+                      "name": "OPERATING"
+                    },
+                    {
+                      "name": "ARCHIVED"
+                    }
+                  ]
+                }
+              },
+              "Lifecycle Stage": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "build"
+                    },
+                    {
+                      "name": "launch"
+                    },
+                    {
+                      "name": "operate"
+                    },
+                    {
+                      "name": "evolve"
+                    }
+                  ]
+                }
+              },
+              "Health": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "GREEN"
+                    },
+                    {
+                      "name": "AMBER"
+                    },
+                    {
+                      "name": "RED"
+                    },
+                    {
+                      "name": "UNKNOWN"
+                    }
+                  ]
+                }
+              },
+              "Goal": {
+                "rich_text": {}
+              },
+              "Priority": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "P0"
+                    },
+                    {
+                      "name": "P1"
+                    },
+                    {
+                      "name": "P2"
+                    },
+                    {
+                      "name": "P3"
+                    }
+                  ]
+                }
+              },
+              "Owner": {
+                "people": {}
+              },
+              "Repo URL": {
+                "url": {}
+              },
+              "Obsidian Index URI": {
+                "url": {}
+              },
+              "Briefing Enabled": {
+                "checkbox": {}
+              },
+              "Briefing Window": {
+                "rich_text": {}
+              },
+              "Last Briefing": {
+                "date": {}
+              },
+              "Next Briefing": {
+                "date": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "tasks",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Tasks / Backlog"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Task ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "INBOX"
+                    },
+                    {
+                      "name": "DRAFT"
+                    },
+                    {
+                      "name": "READY"
+                    },
+                    {
+                      "name": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "BLOCKED"
+                    },
+                    {
+                      "name": "QA"
+                    },
+                    {
+                      "name": "AWAITING_APPROVAL"
+                    },
+                    {
+                      "name": "DONE"
+                    },
+                    {
+                      "name": "CANCELLED"
+                    }
+                  ]
+                }
+              },
+              "Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "feature"
+                    },
+                    {
+                      "name": "bug"
+                    },
+                    {
+                      "name": "ops"
+                    },
+                    {
+                      "name": "research"
+                    },
+                    {
+                      "name": "documentation"
+                    },
+                    {
+                      "name": "agent_change"
+                    },
+                    {
+                      "name": "briefing_followup"
+                    }
+                  ]
+                }
+              },
+              "Lifecycle Stage": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "build"
+                    },
+                    {
+                      "name": "launch"
+                    },
+                    {
+                      "name": "operate"
+                    },
+                    {
+                      "name": "evolve"
+                    }
+                  ]
+                }
+              },
+              "Priority": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "P0"
+                    },
+                    {
+                      "name": "P1"
+                    },
+                    {
+                      "name": "P2"
+                    },
+                    {
+                      "name": "P3"
+                    }
+                  ]
+                }
+              },
+              "Risk": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "LOW"
+                    },
+                    {
+                      "name": "MEDIUM"
+                    },
+                    {
+                      "name": "HIGH"
+                    },
+                    {
+                      "name": "CRITICAL"
+                    }
+                  ]
+                }
+              },
+              "Acceptance Summary": {
+                "rich_text": {}
+              },
+              "Approval Policy": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "NONE"
+                    },
+                    {
+                      "name": "OWNER_BEFORE_RUN"
+                    },
+                    {
+                      "name": "OWNER_BEFORE_RELEASE"
+                    },
+                    {
+                      "name": "OWNER_FOR_ACTION"
+                    }
+                  ]
+                }
+              },
+              "Deadline": {
+                "date": {}
+              },
+              "Next Action": {
+                "rich_text": {}
+              },
+              "Base Revision": {
+                "rich_text": {}
+              },
+              "Latest Run ID": {
+                "rich_text": {}
+              },
+              "Verified SHA": {
+                "rich_text": {}
+              },
+              "PR / Result URI": {
+                "url": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "decisions",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Decisions"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Decision ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "PROPOSED"
+                    },
+                    {
+                      "name": "NEEDS_REVIEW"
+                    },
+                    {
+                      "name": "AWAITING_APPROVAL"
+                    },
+                    {
+                      "name": "APPROVED"
+                    },
+                    {
+                      "name": "REJECTED"
+                    },
+                    {
+                      "name": "SUPERSEDED"
+                    }
+                  ]
+                }
+              },
+              "Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "architecture"
+                    },
+                    {
+                      "name": "product"
+                    },
+                    {
+                      "name": "operational"
+                    },
+                    {
+                      "name": "process"
+                    },
+                    {
+                      "name": "agent_brain"
+                    },
+                    {
+                      "name": "risk"
+                    }
+                  ]
+                }
+              },
+              "Statement": {
+                "rich_text": {}
+              },
+              "Options Summary": {
+                "rich_text": {}
+              },
+              "Rationale": {
+                "rich_text": {}
+              },
+              "Decision Owner": {
+                "people": {}
+              },
+              "Approved By": {
+                "people": {}
+              },
+              "Decided At": {
+                "date": {}
+              },
+              "ACP ID": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "open_questions",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Open Questions"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Question ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "OPEN"
+                    },
+                    {
+                      "name": "NEEDS_ANDREY"
+                    },
+                    {
+                      "name": "RESEARCHING"
+                    },
+                    {
+                      "name": "ANSWERED"
+                    },
+                    {
+                      "name": "DROPPED"
+                    }
+                  ]
+                }
+              },
+              "Impact": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "BLOCKING"
+                    },
+                    {
+                      "name": "HIGH"
+                    },
+                    {
+                      "name": "NORMAL"
+                    },
+                    {
+                      "name": "LOW"
+                    }
+                  ]
+                }
+              },
+              "Owner": {
+                "people": {}
+              },
+              "Asked By": {
+                "rich_text": {}
+              },
+              "Due": {
+                "date": {}
+              },
+              "Answer Summary": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "agents",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Agents"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Agent ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "PROPOSED"
+                    },
+                    {
+                      "name": "ACTIVE"
+                    },
+                    {
+                      "name": "PAUSED"
+                    },
+                    {
+                      "name": "DEGRADED"
+                    },
+                    {
+                      "name": "RETIRED"
+                    }
+                  ]
+                }
+              },
+              "Role": {
+                "select": {
+                  "options": []
+                }
+              },
+              "Runtime": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "HERMES"
+                    },
+                    {
+                      "name": "CODEX"
+                    },
+                    {
+                      "name": "WORK"
+                    },
+                    {
+                      "name": "ANTIGRAVITY"
+                    },
+                    {
+                      "name": "EXTERNAL"
+                    }
+                  ]
+                }
+              },
+              "Scope": {
+                "rich_text": {}
+              },
+              "Prohibited Actions": {
+                "rich_text": {}
+              },
+              "Permission Profile": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "READ_ONLY"
+                    },
+                    {
+                      "name": "PROPOSE"
+                    },
+                    {
+                      "name": "STATE_WRITE"
+                    },
+                    {
+                      "name": "CODE_WRITE"
+                    },
+                    {
+                      "name": "CONTROLLED_RELEASE"
+                    }
+                  ]
+                }
+              },
+              "Agent Manifest URI": {
+                "url": {}
+              },
+              "Last Run": {
+                "date": {}
+              },
+              "Last Heartbeat": {
+                "date": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "brain_versions",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Agent Brain / Prompt Versions"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Brain Version ID": {
+                "rich_text": {}
+              },
+              "Version": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "DRAFT"
+                    },
+                    {
+                      "name": "PROPOSED"
+                    },
+                    {
+                      "name": "EVALUATING"
+                    },
+                    {
+                      "name": "AWAITING_APPROVAL"
+                    },
+                    {
+                      "name": "APPROVED"
+                    },
+                    {
+                      "name": "ACTIVE"
+                    },
+                    {
+                      "name": "REJECTED"
+                    },
+                    {
+                      "name": "SUPERSEDED"
+                    },
+                    {
+                      "name": "ROLLED_BACK"
+                    },
+                    {
+                      "name": "ACTIVATION_FAILED"
+                    }
+                  ]
+                }
+              },
+              "Change Type": {
+                "multi_select": {
+                  "options": [
+                    {
+                      "name": "prompt"
+                    },
+                    {
+                      "name": "tools"
+                    },
+                    {
+                      "name": "permissions"
+                    },
+                    {
+                      "name": "memory_policy"
+                    },
+                    {
+                      "name": "model"
+                    },
+                    {
+                      "name": "full"
+                    }
+                  ]
+                }
+              },
+              "Summary": {
+                "rich_text": {}
+              },
+              "Reason": {
+                "rich_text": {}
+              },
+              "Risk": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "LOW"
+                    },
+                    {
+                      "name": "MEDIUM"
+                    },
+                    {
+                      "name": "HIGH"
+                    },
+                    {
+                      "name": "CRITICAL"
+                    }
+                  ]
+                }
+              },
+              "Artifact URI": {
+                "url": {}
+              },
+              "Diff URI": {
+                "url": {}
+              },
+              "Artifact SHA-256": {
+                "rich_text": {}
+              },
+              "Hash Profile": {
+                "rich_text": {}
+              },
+              "Artifact Commit SHA": {
+                "rich_text": {}
+              },
+              "Byte Length": {
+                "number": {}
+              },
+              "Evaluation Result": {
+                "rich_text": {}
+              },
+              "Activated At": {
+                "date": {}
+              },
+              "Activated By": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "operating_manual",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Operating Manual"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Manual ID": {
+                "rich_text": {}
+              },
+              "Topic": {
+                "rich_text": {}
+              },
+              "Scope": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "GLOBAL"
+                    },
+                    {
+                      "name": "PROJECT"
+                    },
+                    {
+                      "name": "PRODUCT"
+                    },
+                    {
+                      "name": "AGENT"
+                    }
+                  ]
+                }
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "DRAFT"
+                    },
+                    {
+                      "name": "REVIEW"
+                    },
+                    {
+                      "name": "APPROVED"
+                    },
+                    {
+                      "name": "ACTIVE"
+                    },
+                    {
+                      "name": "SUPERSEDED"
+                    }
+                  ]
+                }
+              },
+              "Version": {
+                "rich_text": {}
+              },
+              "Effective From": {
+                "date": {}
+              },
+              "Snapshot URI": {
+                "url": {}
+              },
+              "Content Hash": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "changes",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Changes"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Change ID": {
+                "rich_text": {}
+              },
+              "Entity Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "PROJECT"
+                    },
+                    {
+                      "name": "TASK"
+                    },
+                    {
+                      "name": "DECISION"
+                    },
+                    {
+                      "name": "OPEN_QUESTION"
+                    },
+                    {
+                      "name": "AGENT"
+                    },
+                    {
+                      "name": "BRAIN_VERSION"
+                    },
+                    {
+                      "name": "OPERATING_MANUAL"
+                    },
+                    {
+                      "name": "CHANGE"
+                    },
+                    {
+                      "name": "SOURCE_EVENT"
+                    },
+                    {
+                      "name": "APPROVAL"
+                    },
+                    {
+                      "name": "BRIEFING"
+                    }
+                  ]
+                }
+              },
+              "Operation": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "CREATE"
+                    },
+                    {
+                      "name": "UPDATE"
+                    },
+                    {
+                      "name": "STATUS_TRANSITION"
+                    },
+                    {
+                      "name": "RELATION"
+                    },
+                    {
+                      "name": "ARCHIVE"
+                    },
+                    {
+                      "name": "SCHEMA_CHANGE"
+                    }
+                  ]
+                }
+              },
+              "Changed Fields": {
+                "multi_select": {
+                  "options": []
+                }
+              },
+              "Old Value Summary": {
+                "rich_text": {}
+              },
+              "New Value Summary": {
+                "rich_text": {}
+              },
+              "Initiator": {
+                "rich_text": {}
+              },
+              "Initiator Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "person"
+                    },
+                    {
+                      "name": "bot"
+                    },
+                    {
+                      "name": "agent"
+                    },
+                    {
+                      "name": "integration"
+                    }
+                  ]
+                }
+              },
+              "Reason": {
+                "rich_text": {}
+              },
+              "Occurred At": {
+                "date": {}
+              },
+              "Correlation ID": {
+                "rich_text": {}
+              },
+              "Before Hash": {
+                "rich_text": {}
+              },
+              "After Hash": {
+                "rich_text": {}
+              },
+              "Hash Profile": {
+                "rich_text": {}
+              },
+              "Audit Path": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "FAILED"
+                    }
+                  ]
+                }
+              },
+              "Notion Event ID": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "source_events",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Source Events"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Source ID": {
+                "rich_text": {}
+              },
+              "Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "RAW_TRANSCRIPT"
+                    },
+                    {
+                      "name": "OPERATIONAL_PACKAGE"
+                    },
+                    {
+                      "name": "BRIEFING"
+                    },
+                    {
+                      "name": "APPROVAL"
+                    },
+                    {
+                      "name": "RUN_RESULT"
+                    },
+                    {
+                      "name": "NOTION_WEBHOOK"
+                    },
+                    {
+                      "name": "EXTERNAL"
+                    }
+                  ]
+                }
+              },
+              "Source System": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "TELEGRAM"
+                    },
+                    {
+                      "name": "WORK"
+                    },
+                    {
+                      "name": "BOT_TRANSCRIBER"
+                    },
+                    {
+                      "name": "NOTION"
+                    },
+                    {
+                      "name": "GITHUB"
+                    },
+                    {
+                      "name": "RAG"
+                    },
+                    {
+                      "name": "OBSIDIAN"
+                    }
+                  ]
+                }
+              },
+              "Occurred At": {
+                "date": {}
+              },
+              "Actor Refs": {
+                "rich_text": {}
+              },
+              "Raw Path": {
+                "rich_text": {}
+              },
+              "Obsidian URI": {
+                "url": {}
+              },
+              "Content SHA-256": {
+                "rich_text": {}
+              },
+              "Hash Profile": {
+                "rich_text": {}
+              },
+              "Correlation ID": {
+                "rich_text": {}
+              },
+              "Normalized Content SHA-256": {
+                "rich_text": {}
+              },
+              "Processing Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "RECEIVED"
+                    },
+                    {
+                      "name": "VERIFIED"
+                    },
+                    {
+                      "name": "EXTRACTED"
+                    },
+                    {
+                      "name": "INGESTED"
+                    },
+                    {
+                      "name": "QUARANTINED"
+                    },
+                    {
+                      "name": "FAILED"
+                    }
+                  ]
+                }
+              },
+              "Confidence": {
+                "number": {}
+              },
+              "Sensitivity": {
+                "select": {
+                  "options": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "approvals",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Approvals"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Approval ID": {
+                "rich_text": {}
+              },
+              "Type": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "BRAIN_ACTIVATION"
+                    },
+                    {
+                      "name": "ACP"
+                    },
+                    {
+                      "name": "MANUAL"
+                    },
+                    {
+                      "name": "RISKY_ACTION"
+                    },
+                    {
+                      "name": "RELEASE"
+                    },
+                    {
+                      "name": "ROLLBACK"
+                    }
+                  ]
+                }
+              },
+              "Target Type": {
+                "rich_text": {}
+              },
+              "Target ID": {
+                "rich_text": {}
+              },
+              "Target Version": {
+                "rich_text": {}
+              },
+              "Artifact SHA-256": {
+                "rich_text": {}
+              },
+              "Hash Profile": {
+                "rich_text": {}
+              },
+              "Artifact Commit SHA": {
+                "rich_text": {}
+              },
+              "Byte Length": {
+                "number": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "PENDING"
+                    },
+                    {
+                      "name": "APPROVED"
+                    },
+                    {
+                      "name": "REJECTED"
+                    },
+                    {
+                      "name": "EXPIRED"
+                    },
+                    {
+                      "name": "CANCELLED"
+                    },
+                    {
+                      "name": "CONSUMED"
+                    }
+                  ]
+                }
+              },
+              "Requested By": {
+                "rich_text": {}
+              },
+              "Requested At": {
+                "date": {}
+              },
+              "Decided By": {
+                "rich_text": {}
+              },
+              "Decided At": {
+                "date": {}
+              },
+              "Channel": {
+                "select": {
+                  "options": [
+                    {
+                      "name": "TELEGRAM"
+                    },
+                    {
+                      "name": "NOTION_ACTION"
+                    }
+                  ]
+                }
+              },
+              "Single-use Token ID": {
+                "rich_text": {}
+              },
+              "Approve Action URL": {
+                "url": {}
+              },
+              "Reject Action URL": {
+                "url": {}
+              },
+              "Expires At": {
+                "date": {}
+              },
+              "Activation Event ID": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "database_key": "briefings",
+      "request": {
+        "method": "POST",
+        "path": "/v1/databases",
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "<PARENT_PAGE_ID>"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Briefings"
+              }
+            }
+          ],
+          "initial_data_source": {
+            "properties": {
+              "Name": {
+                "title": {}
+              },
+              "Entity ID": {
+                "rich_text": {}
+              },
+              "State Version": {
+                "number": {}
+              },
+              "Last Command ID": {
+                "rich_text": {}
+              },
+              "Audit Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "COMMITTED"
+                    },
+                    {
+                      "name": "AUDIT_PENDING"
+                    },
+                    {
+                      "name": "UNRECONCILED"
+                    },
+                    {
+                      "name": "ERROR"
+                    }
+                  ]
+                }
+              },
+              "Created": {
+                "created_time": {}
+              },
+              "Created By": {
+                "created_by": {}
+              },
+              "Last Edited": {
+                "last_edited_time": {}
+              },
+              "Last Edited By": {
+                "last_edited_by": {}
+              },
+              "Briefing ID": {
+                "rich_text": {}
+              },
+              "Status": {
+                "status": {
+                  "options": [
+                    {
+                      "name": "SCHEDULED"
+                    },
+                    {
+                      "name": "PREPARED"
+                    },
+                    {
+                      "name": "IN_PROGRESS"
+                    },
+                    {
+                      "name": "PROCESSING"
+                    },
+                    {
+                      "name": "CLOSED"
+                    },
+                    {
+                      "name": "SKIPPED"
+                    },
+                    {
+                      "name": "FAILED"
+                    }
+                  ]
+                }
+              },
+              "Scheduled At": {
+                "date": {}
+              },
+              "Started At": {
+                "date": {}
+              },
+              "Ended At": {
+                "date": {}
+              },
+              "Input Snapshot Hash": {
+                "rich_text": {}
+              },
+              "Summary": {
+                "rich_text": {}
+              },
+              "Next Briefing": {
+                "date": {}
+              },
+              "Missing Data": {
+                "rich_text": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "phase_2_patch_relations_after_resolving_data_source_ids": [
+    {
+      "database_key": "projects",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Tasks": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Decisions": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Open Questions": {
+          "target": "open_questions",
+          "relation_mode": "single_property"
+        },
+        "Agents": {
+          "target": "agents",
+          "relation_mode": "single_property"
+        },
+        "Briefings": {
+          "target": "briefings",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "tasks",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Project": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Assigned Agent": {
+          "target": "agents",
+          "relation_mode": "single_property"
+        },
+        "Code Owner": {
+          "target": "agents",
+          "relation_mode": "single_property"
+        },
+        "Parent Task": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Depends On": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Decision": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Briefing": {
+          "target": "briefings",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "decisions",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Project": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Approval": {
+          "target": "approvals",
+          "relation_mode": "single_property"
+        },
+        "Supersedes": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Resulting Tasks": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Operating Manual": {
+          "target": "operating_manual",
+          "relation_mode": "single_property"
+        },
+        "Briefings": {
+          "target": "briefings",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "open_questions",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Project": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Blocking Tasks": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Answer Decision": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Briefings": {
+          "target": "briefings",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "agents",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Projects": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Active Brain Version": {
+          "target": "brain_versions",
+          "relation_mode": "single_property"
+        },
+        "Brain Versions": {
+          "target": "brain_versions",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "brain_versions",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Agent": {
+          "target": "agents",
+          "relation_mode": "single_property"
+        },
+        "Base Version": {
+          "target": "brain_versions",
+          "relation_mode": "single_property"
+        },
+        "Rollback Target": {
+          "target": "brain_versions",
+          "relation_mode": "single_property"
+        },
+        "Approval": {
+          "target": "approvals",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "operating_manual",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Projects": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Agents": {
+          "target": "agents",
+          "relation_mode": "single_property"
+        },
+        "Supersedes": {
+          "target": "operating_manual",
+          "relation_mode": "single_property"
+        },
+        "Decision": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Approval": {
+          "target": "approvals",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "changes",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Decision": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "source_events",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Projects": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Parent Source": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Related Tasks": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Related Decisions": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Related Questions": {
+          "target": "open_questions",
+          "relation_mode": "single_property"
+        },
+        "Related Changes": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "approvals",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Source Event": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Decision": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        }
+      }
+    },
+    {
+      "database_key": "briefings",
+      "relations": {
+        "Source Events": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Last Change": {
+          "target": "changes",
+          "relation_mode": "single_property"
+        },
+        "Project": {
+          "target": "projects",
+          "relation_mode": "single_property"
+        },
+        "Raw Source": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Operational Package": {
+          "target": "source_events",
+          "relation_mode": "single_property"
+        },
+        "Decisions": {
+          "target": "decisions",
+          "relation_mode": "single_property"
+        },
+        "Tasks": {
+          "target": "tasks",
+          "relation_mode": "single_property"
+        },
+        "Questions": {
+          "target": "open_questions",
+          "relation_mode": "single_property"
+        }
+      }
+    }
+  ],
+  "phase_3_manual_views": {
+    "Projects": [
+      "Active Projects",
+      "All Projects",
+      "On Hold",
+      "Operating"
+    ],
+    "Tasks / Backlog": [
+      "Inbox",
+      "Backlog",
+      "Ready",
+      "In Progress",
+      "Blocked",
+      "Awaiting Approval",
+      "Done",
+      "By Project"
+    ],
+    "Decisions": [
+      "Needs Review",
+      "Awaiting Approval",
+      "Approved",
+      "Superseded",
+      "By Project"
+    ],
+    "Open Questions": [
+      "Open",
+      "Needs Андрей",
+      "Blocking",
+      "By Project"
+    ],
+    "Agents": [
+      "Active",
+      "Proposed",
+      "Paused",
+      "By Project"
+    ],
+    "Agent Brain / Prompt Versions": [
+      "Draft / Proposed",
+      "Evaluating",
+      "Awaiting Approval",
+      "Active",
+      "Version History",
+      "By Agent"
+    ],
+    "Operating Manual": [
+      "Active",
+      "Draft / Review",
+      "By Scope",
+      "By Project",
+      "By Agent"
+    ],
+    "Changes": [
+      "Recent Changes",
+      "Unreconciled",
+      "Audit Pending",
+      "By Entity"
+    ],
+    "Source Events": [
+      "Recent Sources",
+      "Raw Transcripts",
+      "Operational Packages",
+      "By Project",
+      "Failed / Quarantined"
+    ],
+    "Approvals": [
+      "Pending",
+      "Approved",
+      "Rejected / Expired",
+      "By Type"
+    ],
+    "Briefings": [
+      "Today",
+      "Scheduled",
+      "Processing",
+      "Closed",
+      "Failed / Skipped",
+      "By Project"
+    ]
+  },
+  "phase_4_manual_templates": [
+    {
+      "database": "Projects",
+      "name": "New Project",
+      "body": [
+        "Goal and scope",
+        "Success criteria",
+        "Constraints",
+        "Current context"
+      ]
+    },
+    {
+      "database": "Tasks / Backlog",
+      "name": "New Task",
+      "body": [
+        "Context",
+        "Acceptance criteria",
+        "Evidence / result"
+      ]
+    },
+    {
+      "database": "Decisions",
+      "name": "Decision record",
+      "body": [
+        "Context",
+        "Options and consequences",
+        "Rationale"
+      ]
+    },
+    {
+      "database": "Open Questions",
+      "name": "Open question",
+      "body": [
+        "Context",
+        "Research notes",
+        "Sources"
+      ]
+    },
+    {
+      "database": "Agent Brain / Prompt Versions",
+      "name": "Brain version proposal",
+      "body": [
+        "Change detail",
+        "Evaluation",
+        "Rollback plan"
+      ]
+    },
+    {
+      "database": "Operating Manual",
+      "name": "Manual entry",
+      "body": [
+        "Policy / procedure",
+        "Exceptions",
+        "Change history"
+      ]
+    },
+    {
+      "database": "Briefings",
+      "name": "Briefing session",
+      "body": [
+        "Agenda",
+        "Notes",
+        "Close-out"
+      ]
+    }
+  ]
+}
