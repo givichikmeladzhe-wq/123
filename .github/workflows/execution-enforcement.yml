@@ -1,3 +1,4 @@
+# CI verification probe for execution-proof PR
 name: Execution Enforcement
 
 on:
