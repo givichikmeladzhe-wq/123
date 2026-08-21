@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/self-hosted-discovery.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/self-hosted-discovery.yml'
 
 permissions:
   contents: read
