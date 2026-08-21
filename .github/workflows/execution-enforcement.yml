@@ -29,3 +29,5 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Run persistent execution smoke
         run: python scripts/execution_smoke.py
+      - name: Run bridge proof
+        run: python scripts/bridge_proof.py
