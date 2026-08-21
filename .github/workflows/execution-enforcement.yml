@@ -5,14 +5,16 @@ on:
     branches: [main]
     paths:
       - 'runtime/**'
-      - 'tests/test_execution_enforcement.py'
-      - 'tests/test_task_execution_adapter.py'
+      - 'tests/**'
+      - 'schema/**'
+      - 'scripts/**'
       - '.github/workflows/execution-enforcement.yml'
   pull_request:
     paths:
       - 'runtime/**'
-      - 'tests/test_execution_enforcement.py'
-      - 'tests/test_task_execution_adapter.py'
+      - 'tests/**'
+      - 'schema/**'
+      - 'scripts/**'
       - '.github/workflows/execution-enforcement.yml'
 
 jobs:
@@ -23,5 +25,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run execution enforcement suite
-        run: python -m unittest discover -s tests -p 'test_*execution*.py' -v
+      - name: Run full AI OS test suite
+        run: python -m unittest discover -s tests -v
+      - name: Run persistent execution smoke
+        run: python scripts/execution_smoke.py
