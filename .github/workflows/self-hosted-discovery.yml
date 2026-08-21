@@ -1,0 +1,39 @@
+name: Self-hosted Hermes Discovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/self-hosted-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  read-only-discovery:
+    runs-on: self-hosted
+    timeout-minutes: 3
+    steps:
+      - name: Read-only runtime identity
+        shell: bash
+        run: |
+          set -eu
+          echo "DISCOVERY_ONLY=true"
+          printf 'hostname='; hostname
+          printf 'user='; id -un
+          printf 'uid='; id -u
+          printf 'kernel='; uname -sr
+          printf 'arch='; uname -m
+          echo 'hermes_services_begin'
+          if command -v systemctl >/dev/null 2>&1; then
+            systemctl list-units --type=service --all --no-pager --no-legend 2>/dev/null | grep -i hermes || true
+          fi
+          echo 'hermes_services_end'
+          echo 'known_paths_begin'
+          for p in /opt/ai-factory-control /opt/ai-factory/shared /srv/agents/hermes-1 /srv/agents/hermes-2 "$HOME/.hermes"; do
+            if [ -e "$p" ]; then
+              stat -c '%A %U:%G %n' "$p" 2>/dev/null || true
+            fi
+          done
+          echo 'known_paths_end'
+          echo 'secret_values_emitted=false'
