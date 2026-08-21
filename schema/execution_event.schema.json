@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-os.local/schema/execution_event.schema.json",
+  "title": "AI OS Execution Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_type", "task_id", "project_id", "state", "occurred_at", "evidence_refs"],
+  "properties": {
+    "event_type": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "state": {
+      "enum": ["IDLE", "ACTIVE_EXECUTION", "CLAIMED_DONE", "QA", "PASS", "BLOCKED", "WAITING_OWNER", "STALLED", "CANCELLED_BY_OWNER"]
+    },
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  }
+}
