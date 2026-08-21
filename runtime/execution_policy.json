@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "execution_triggers": ["делай", "начинай", "продолжай", "добей", "действуй", "иди работай"],
+  "valid_execution_outcomes": ["ARTIFACT_CREATED", "ARTIFACT_CHANGED", "EXECUTOR_RUNNING", "TEST_EXECUTED", "DEPLOY_EXECUTED", "BLOCKED_WITH_EVIDENCE", "OWNER_ACTION_REQUIRED", "QA_PASS", "QA_FAIL", "CANCELLED_BY_OWNER"],
+  "never_progress": ["PLAN_ONLY", "AUDIT_ONLY", "PROMISE_TO_CONTINUE", "UNVERIFIED_DONE", "UNVERIFIED_BLOCKER", "NO_PROGRESS"],
+  "gates": {
+    "done_requires_independent_qa": true,
+    "blocker_requires_evidence": true,
+    "background_claim_requires_live_job": true,
+    "owner_interrupt_requires_recovery_attempts": true,
+    "active_project_cannot_be_silently_displaced": true,
+    "repeat_audit_requires_new_evidenced_blocker": true
+  }
+}
