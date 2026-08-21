@@ -1,0 +1,25 @@
+name: Execution Enforcement
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'runtime/**'
+      - 'tests/test_execution_enforcement.py'
+      - '.github/workflows/execution-enforcement.yml'
+  pull_request:
+    paths:
+      - 'runtime/**'
+      - 'tests/test_execution_enforcement.py'
+      - '.github/workflows/execution-enforcement.yml'
+
+jobs:
+  execution-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run execution enforcement tests
+        run: python -m unittest tests.test_execution_enforcement -v
