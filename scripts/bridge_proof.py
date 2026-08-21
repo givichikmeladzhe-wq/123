@@ -3,15 +3,20 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import json
+import sys
 import tempfile
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from runtime.control_service import ControlService
 from runtime.envelopes import (
     AcceptanceCriterion, AckEnvelope, QAEnvelope, ResultEnvelope, TaskEnvelope,
     now_iso, validate_ack, validate_qa, validate_result, validate_task,
 )
-from runtime.execution_enforcement import Evidence, EnforcementError
+from runtime.execution_enforcement import Evidence
 from runtime.execution_store import ExecutionStore
 from runtime.run_semantics import RunSemantics
 
@@ -84,4 +89,5 @@ def main() -> int:
     return 0
 
 
-if __name__=='__main__': raise SystemExit(main())
+if __name__=='__main__':
+    raise SystemExit(main())
